@@ -160,7 +160,22 @@ while True:
                 else:
                     print("Falha ao realizar cadastro!")
             if op_funcionario == 3:
-                pass
+                print("\n\n\n {0} \n|{1:^20}|\n {0} ".format(20*'-',"Editar Funcionario"))
+                index = ControllerFuncionario.pesquisar(input("Digite o nome do funcionario: "))
+                if index != -1:
+                    print("Realize a alteracao: ")
+                    clt = input("clt (sim/não): ")
+                    nome = input("Nome: ")
+                    telefone = input("Telefone: ")
+                    cpf = input("cpf: ")
+                    email = input("E-mail: ")
+                    endereco = input("Endereço: ")
+                    if ControllerFuncionario.editar(index, clt, nome, telefone, cpf, email, endereco):
+                        print("Alteracoes realizadas com sucesso!")
+                    else:
+                        print("Falha na alteracao, os dados nao foram preenchidos corretamente!")
+                else:
+                    print("Falha ao realizar alteracao, o funcionario nao foi encontrado!")
             if op_funcionario == 4:
                 pass
             

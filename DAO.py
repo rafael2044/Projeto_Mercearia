@@ -27,6 +27,11 @@ class DAOcliente:
         
 class DAOfuncionario:
     @classmethod
+    def zerar(cls):
+        with open("db/funcionarios.txt", "w") as arq:
+            arq.writelines("")
+            
+    @classmethod
     def salvar(cls, funcionario : Funcionario):
         with open("db/funcionarios.txt", 'a+') as arq:
             arq.writelines( funcionario.get_clt()+"|"+funcionario.get_nome() + "|" + 

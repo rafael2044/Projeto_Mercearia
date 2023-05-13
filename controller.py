@@ -29,25 +29,30 @@ class ControllerFuncionario:
     @classmethod
     def ver_funcionario(cls):
         funcionarios = DAOfuncionario.ler()
-        print(" {0} \n|{1:^10}||{2:^30}|{3:^15}|{4:^15}|{5:^25}|{6:30}|\n {0} "
-              .format(128*"-", "CLT", "NOME", "TELEFONE", "CPF", "E-MAIL", "ENDEREÇO"))
+        print(" {0} \n|{1:^10}|{2:^30}|{3:^15}|{4:^15}|{5:^25}|{6:50}|\n {0} "
+              .format(150*"-", "CLT", "NOME", "TELEFONE", "CPF", "E-MAIL", "ENDEREÇO"))
         for i in funcionarios:
-            print("|{0:10}|{1:30}|{1:15}|{2:15}|{3:25}|{4:30}|"
+            print("|{0:10}|{1:30}|{2:15}|{3:15}|{4:25}|{5:50}|"
                   .format(i.get_clt() ,i.get_nome(), i.get_telefone(), i.get_cpf(),
                           i.get_email(), i.get_endereco()))
-        print(" {0} ".format(128*"-"))
+        print(" {0} ".format(150*"-"))
     
     @classmethod
-    def editar(cls, index, nome, telefone, cpf, email, endereco):
+    def editar(cls, index, clt, nome, telefone, cpf, email, endereco):
         if len(nome)>0 and len(telefone) == 11 and len(cpf) == 11 and len(email) > 0 and len(endereco) > 0:
-            pass
+            cls.funcionario[index] = Funcionario(clt, nome, telefone, cpf, email, endereco)
+            DAOfuncionario.zerar()
+            for i in cls.funcionario:
+                DAOfuncionario.salvar(i)
+            return True
+        return False
     
     @classmethod
     def pesquisar(cls, nome):
-        cls.clientes = DAOcliente.ler()
-        for i in cls.clientes:
+        cls.funcionario = DAOfuncionario.ler()
+        for i in cls.funcionario:
             if i.get_nome() == nome:
-                return cls.clientes.index(i)
+                return cls.funcionario.index(i)
         return -1
 
 
