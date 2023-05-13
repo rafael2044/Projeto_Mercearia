@@ -181,9 +181,9 @@ while True:
                     print("Falha ao realizar cadastro!")
             if op_funcionario == 3:
                 print("\n\n\n {0} \n|{1:^20}|\n {0} ".format(20*'-',"Editar Funcionario"))
-                index = ControllerFuncionario.pesquisar(input("Digite o nome do funcionario: "))
+                index = ControllerFuncionario.pesquisar_id(input("Digite o id do funcionario: "))
                 if index != -1:
-                    print("Realize a alteracao: ")
+                    print("Realize as alteracoes: ")
                     clt = input("clt (sim/não): ")
                     nome = input("Nome: ")
                     telefone = input("Telefone: ")
@@ -198,7 +198,7 @@ while True:
                     print("Falha ao realizar alteracao, o funcionario nao foi encontrado!")
             if op_funcionario == 4:
                 print("\n\n\n {0} \n|{1:^20}|\n {0} ".format(20*'-',"Deletar Funcionario"))
-                index = ControllerFuncionario.pesquisar(input("Digite o nome do funcionario: "))
+                index = ControllerFuncionario.pesquisar_id(input("Digite o id do funcionario: "))
                 if index != -1:
                     ControllerFuncionario.deletar(index)
                     print("Funcionario deletado com sucesso!")
