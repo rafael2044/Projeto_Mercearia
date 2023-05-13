@@ -18,15 +18,54 @@ class Pessoa:
     def get_endereco(self):
         return self._endereco
     
+    def set_nome(self, nome):
+        self._nome = nome
+    def set_telefone(self, telefone):
+        self._telefone = telefone
+    def set_cpf(self, cpf):
+        self._cpf = cpf
+    def set_email(self, email):
+        self._email = email
+    def set_endereco(self, endereco):
+        self._endereco = endereco
+    
 class Cliente(Pessoa):
+    count_id = 0
     def __init__(self, nome, telefone, cpf, email, endereco):
         super().__init__(nome, telefone, cpf, email, endereco)
+        self._id = self.gerar_id()
+    
+
+    @classmethod
+    def gerar_id(cls):
+        cls.count_id += 1
+        return cls.count_id
+    
+    @classmethod
+    def zerar_id(cls):
+        cls.count_id = 0
+
+    def get_id(self):
+        return self._id
 
 class Funcionario(Pessoa):
     def __init__(self, clt, nome, telefone, cpf, email, endereco):
         super().__init__(nome, telefone, cpf, email, endereco)
         self._clt = clt
+        self._id = self.gerar_id()
+        
+    @classmethod
+    def gerar_id(cls):
+        cls.count_id += 1
+        return cls.count_id
 
+    @classmethod
+    def zerar_id(cls):
+        cls.count_id = 0
+
+    def get_id(self):
+        return self._id
+    
     def get_clt(self):
         return self._clt
 
@@ -37,7 +76,6 @@ class Fornecedor:
         self._telefone = telefone
         self._categoria = categoria
 
-
 class Categoria:
     def __init__(self, categoria):
         self._categoria = categoria
@@ -45,7 +83,6 @@ class Categoria:
     def get_nome(self):
         return self._categoria
     
-
 class Produto:
     def __init__(self, nome : str, categoria : Categoria, valor : float):
         self._nome = nome
@@ -59,7 +96,6 @@ class Produto:
     def get_categoria(self):
         return self._categoria
     
-
 class Estoque:
     def __init__(self, produto: Produto, quantidade : int):
         self._produto = produto

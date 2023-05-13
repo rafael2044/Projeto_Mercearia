@@ -3,21 +3,22 @@ from model import Cliente, Funcionario, Categoria, Produto, Estoque
 class ControllerCliente:
     @classmethod
     def cadastrar(cls, nome : str, telefone: str, cpf: str, email: str, endereco: str):
-        if (len(nome)>=3 and len(telefone) == 11 and len(cpf) == 11 and len(email)>10 and len(endereco)>5) and not(DAOcliente.verificar(nome)):
+        if (len(nome)>=3 and len(telefone) == 11 and len(cpf) == 11 and len(email)>10 and len(endereco)>5) and not(DAOcliente.verificar_nome(nome)):
             DAOcliente.salvar(Cliente(nome, telefone, cpf, email,endereco))
             return True
         return False
     @classmethod
     def ver_clientes(cls):
         clientes = DAOcliente.ler()
-        print(" {0} \n|{1:^30}|{2:^15}|{3:^15}|{4:^25}|{5:30}|\n {0} "
-              .format(119*"-", "NOME", "TELEFONE", "CPF", "E-MAIL", "ENDEREÇO"))
+        print(" {0} \n|{1:^10}|{2:30}|{3:^15}|{4:^15}|{5:^25}|{6:30}|\n {0} "
+              .format(130*"-", "ID","NOME", "TELEFONE", "CPF", "E-MAIL", "ENDEREÇO"))
         for i in clientes:
-            print("|{0:30}|{1:15}|{2:15}|{3:25}|{4:30}|"
-                  .format(i.get_nome(), i.get_telefone(), i.get_cpf(),
+            print("|{0:^10}|{1:30}|{2:15}|{3:15}|{4:25}|{5:30}|"
+                  .format(i.get_id() ,i.get_nome(), i.get_telefone(), i.get_cpf(),
                           i.get_email(), i.get_endereco()))
-        print(" {0} ".format(119*"-"))
+        print(" {0} ".format(130*"-"))
     @classmethod
+
     def editar(cls, index, nome, telefone, cpf, email, endereco):
         if len(nome)>0 and len(telefone) == 11 and len(cpf) == 11 and len(email) > 0 and len(endereco) > 0:
             cls.cliente[index] = Cliente(nome, telefone, cpf, email, endereco)
@@ -35,10 +36,10 @@ class ControllerCliente:
             DAOcliente.salvar(i)
 
     @classmethod
-    def pesquisar(cls, nome):
+    def pesquisar(cls, id):
         cls.cliente = DAOcliente.ler()
         for i in cls.cliente:
-            if i.get_nome() == nome:
+            if i.get_id() == int(id):
                 return cls.cliente.index(i)
         return -1
 
@@ -83,7 +84,6 @@ class ControllerFuncionario:
             if i.get_nome() == nome:
                 return cls.funcionario.index(i)
         return -1
-
 
 class ControllerFornecedor:
     pass
@@ -189,10 +189,6 @@ class ControllerVenda:
     def realizar_venda(cls, index, vendedor, comprador, quantidadeVendida):
         produto = cls.estoque[index]
         pass
-
-
-    
-
 
 class ControllerProduto:
     @classmethod

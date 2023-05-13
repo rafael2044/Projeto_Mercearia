@@ -9,8 +9,8 @@ class DAOcliente:
     @classmethod
     def salvar(cls, cliente:Cliente):
         with open("db/clientes.txt", 'a+') as arq:
-            arq.writelines(cliente.get_nome() + "|" + cliente.get_telefone() + "|" 
-                           + cliente.get_cpf() + "|" + cliente.get_email() + "|" + cliente.get_endereco())
+            arq.writelines("{}|{}|{}|{}|{}|{}".format(str(cliente.get_id()) ,cliente.get_nome() ,cliente.get_telefone(),
+                           cliente.get_cpf(), cliente.get_email(), cliente.get_endereco()))
             arq.writelines('\n')
     @classmethod
     def ler(cls):
@@ -19,11 +19,12 @@ class DAOcliente:
             cls.cliente = list(map(lambda x: x.replace("\n", ""), cls.cliente))
             cls.cliente = list(map(lambda x: x.split('|'), cls.cliente))
             cliente = []
+            Cliente.zerar_id()
             for i in cls.cliente:
-                cliente.append(Cliente(i[0],i[1],i[2],i[3],i[4]))
+                cliente.append(Cliente(i[1],i[2],i[3],i[4],i[5]))
             return cliente
     @classmethod
-    def verificar(cls, nome):
+    def verificar_nome(cls, nome):
         cliente = cls.ler()
         for i in cliente:
             if nome == i.get_nome():
