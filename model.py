@@ -18,17 +18,6 @@ class Pessoa:
     def get_endereco(self):
         return self._endereco
     
-    def set_nome(self, nome):
-        self._nome = nome
-    def set_telefone(self, telefone):
-        self._telefone = telefone
-    def set_cpf(self, cpf):
-        self._cpf = cpf
-    def set_email(self, email):
-        self._email = email
-    def set_endereco(self, endereco):
-        self._endereco = endereco
-    
 class Cliente(Pessoa):
     count_id = 0
     def __init__(self, nome, telefone, cpf, email, endereco):
