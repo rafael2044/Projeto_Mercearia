@@ -1,2 +1,2 @@
-Arroz Tio João 1kg|Arroz|5.5|90
-Coca Cola 2l|Bebida|8.5|75
+1|Arroz Tio João 1kg|Arroz|5.5|90
+2|Coca Cola 2l|Bebida|8.5|75

@@ -156,11 +156,12 @@ class ControllerCategoria:
 
 class ControllerEstoque:
     @classmethod
-    def cadastrar(cls, produto: Produto, quantidade: int):
-        if not DAOestoque.verificar(produto) and quantidade > 0:
-            DAOestoque.salvar(produto, quantidade)
-            return True
-        return False
+    def cadastrar(cls, nome, categoria, valor, quantidade: int):
+        if not DAOestoque.verificar(nome) and DAOcategoria.verificar(categoria) and valor > 0 and quantidade > 0:
+            DAOestoque.salvar(Produto(nome, Categoria(categoria), valor), quantidade)
+            print("Produto Cadastrado com sucesso!") 
+        print("Falha ao cadastrar produto!")
+       
     
     @classmethod
     def editar(cls, index, nome, categoria, valor:float):
@@ -189,13 +190,11 @@ class ControllerEstoque:
     @classmethod
     def ver_estoque(cls):
         cls.estoque = DAOestoque.ler()
-        print(f" {96*'-'} ")
-        print("|{0:^40}|{1:^20}|{2:^18}|{3:^15}|".format('NOME', 'CATEGORIA', 'VALOR', 'QUANTIDADE'))
-        print(f" {96*'-'} ")
+        print(" {5} \n|{0:^10}|{1:^40}|{2:^20}|{3:^18}|{4:^15}|\n {5} ".format("ID",'NOME', 'CATEGORIA', 'VALOR', 'QUANTIDADE', 106*'-'))
         for i in cls.estoque:
-            print("|{0:40}|{1:20}|{2:>18}|{3:>15}|".format(i.get_produto().get_nome(), i.get_produto().get_categoria().get_nome(),
+            print("|{0:^10}|{1:40}|{2:20}|{3:>18}|{4:>15}|".format(i.get_produto().get_id(),i.get_produto().get_nome(), i.get_produto().get_categoria().get_nome(),
                                                             i.get_produto().get_valor(), i.get_quantidade()))
-            print(f" {96*'-'} ")
+            print(f" {106*'-'} ")
     
     @classmethod
     def pesquisar(cls, nome):
@@ -210,7 +209,7 @@ class ControllerCaixa:
 
 class ControllerVenda:
     @classmethod
-    def realizar_venda(cls, index, vendedor, comprador, quantidadeVendida):
+    def cadastrar(cls, index, vendedor, comprador, quantidadeVendida):
         produto = cls.estoque[index]
         pass
 

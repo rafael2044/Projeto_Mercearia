@@ -97,7 +97,7 @@ class DAOestoque:
     @classmethod
     def salvar(cls, produto: Produto, quantidade):
         with open("db/estoque.txt", 'a+') as arq:
-            arq.writelines("{0}|{1}|{2}|{3}".format(produto.get_nome(),produto.get_categoria().get_nome(),produto.get_valor(),str(quantidade)))
+            arq.writelines("{0}|{1}|{2}|{3}|{4}".format(str(produto.get_id()),produto.get_nome(),produto.get_categoria().get_nome(),produto.get_valor(),str(quantidade)))
             arq.writelines('\n')
 
     @classmethod
@@ -107,13 +107,14 @@ class DAOestoque:
             cls.estoque = list(map(lambda x: x.replace("\n", ""), cls.estoque))
             cls.estoque = list(map(lambda x: x.split("|"), cls.estoque))
             estoque = []
+            Produto.zerar_id()
             for produto in cls.estoque:
-                estoque.append(Estoque(Produto(produto[0], Categoria(produto[1]), float(produto[2])), int(produto[3])))
+                estoque.append(Estoque(Produto(produto[1], Categoria(produto[2]), float(produto[3])), int(produto[4])))
             return estoque
     
     @classmethod
-    def verificar(cls, produto : Produto):
-        estoque = list(filter(lambda x: x.get_produto().get_nome().lower() == produto.get_nome().lower(), cls.ler()))
+    def verificar(cls, nomeProduto):
+        estoque = list(filter(lambda x: x.get_produto().get_nome().lower() == nomeProduto.lower(), cls.ler()))
         if len(estoque) == 1:
                 return True
         return False

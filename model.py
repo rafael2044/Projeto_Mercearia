@@ -73,7 +73,9 @@ class Categoria:
         return self._categoria
     
 class Produto:
+    count_id = 0
     def __init__(self, nome : str, categoria : Categoria, valor : float):
+        self._id = self.gerar_id()
         self._nome = nome
         self._categoria = categoria
         self._valor = valor
@@ -84,6 +86,18 @@ class Produto:
         return self._nome
     def get_categoria(self):
         return self._categoria
+    
+    @classmethod
+    def gerar_id(cls):
+        cls.count_id += 1
+        return cls.count_id
+
+    @classmethod
+    def zerar_id(cls):
+        cls.count_id = 0
+
+    def get_id(self):
+        return self._id
     
 class Estoque:
     def __init__(self, produto: Produto, quantidade : int):
