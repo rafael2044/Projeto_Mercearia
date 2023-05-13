@@ -40,9 +40,8 @@ class DAOfuncionario:
     @classmethod
     def salvar(cls, funcionario : Funcionario):
         with open("db/funcionarios.txt", 'a+') as arq:
-            arq.writelines( funcionario.get_clt()+"|"+funcionario.get_nome() + "|" + 
-                           funcionario.get_telefone() + "|" + funcionario.get_cpf() + "|" + 
-                           funcionario.get_email() + "|" + funcionario.get_endereco())
+            arq.writelines("{}|{}|{}|{}|{}|{}|{}".format(str(funcionario.get_id()), funcionario.get_clt(),funcionario.get_nome(),
+                           funcionario.get_telefone(),funcionario.get_cpf(), funcionario.get_email(),funcionario.get_endereco()))
             arq.writelines("\n")
 
     @classmethod
@@ -52,11 +51,12 @@ class DAOfuncionario:
             cls.funcionario = list(map(lambda x: x.replace("\n", ""), cls.funcionario))
             cls.funcionario = list(map(lambda x: x.split('|'), cls.funcionario))
             funcionarios = []
+            Funcionario.zerar_id()
             for i in cls.funcionario:
-                funcionarios.append(Funcionario(i[0],i[1],i[2],i[3],i[4],i[5]))
+                funcionarios.append(Funcionario(i[1],i[2],i[3],i[4],i[5],i[6]))
             return funcionarios
     @classmethod
-    def verificar(cls, nome):
+    def verificar_nome(cls, nome):
         funcionario = cls.ler()
         for i in funcionario:
             if nome == i.get_nome():
