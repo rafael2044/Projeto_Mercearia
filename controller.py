@@ -46,20 +46,21 @@ class ControllerCliente:
 class ControllerFuncionario:
     @classmethod
     def cadastrar(cls ,clt: str, nome: str, telefone: str, cpf: str, email: str,endereco: str):
-        if ((clt.lower() == 'sim' or clt.lower == 'não') and len(nome)>3 and len(telefone) == 11 and len(cpf) == 11 and len(email)>10 and len(endereco)>4) and not DAOfuncionario.verificar(nome):
+        if ((clt.lower() == 'sim' or clt.lower == 'não') and len(nome)>3 and len(telefone) == 11 and len(cpf) == 11 and len(email)>10 and len(endereco)>4) and not DAOfuncionario.verificar_nome(nome):
             DAOfuncionario.salvar(Funcionario(clt, nome, telefone, cpf, email, endereco))
             return True
         return False
+    
     @classmethod
     def ver_funcionario(cls):
         funcionarios = DAOfuncionario.ler()
-        print(" {0} \n|{1:^10}|{2:^30}|{3:^15}|{4:^15}|{5:^25}|{6:50}|\n {0} "
-              .format(150*"-", "CLT", "NOME", "TELEFONE", "CPF", "E-MAIL", "ENDEREÇO"))
+        print(" {0} \n|{1:^10}|{2:^10}|{3:^30}|{4:^15}|{5:^15}|{6:^25}|{7:50}|\n {0} "
+              .format(160*"-", "ID", "CLT", "NOME", "TELEFONE", "CPF", "E-MAIL", "ENDEREÇO"))
         for i in funcionarios:
-            print("|{0:10}|{1:30}|{2:15}|{3:15}|{4:25}|{5:50}|"
-                  .format(i.get_clt() ,i.get_nome(), i.get_telefone(), i.get_cpf(),
+            print("|{0:10}|{1:10}|{2:30}|{3:15}|{4:15}|{5:25}|{6:50}|"
+                  .format(i.get_id() ,i.get_clt() ,i.get_nome(), i.get_telefone(), i.get_cpf(),
                           i.get_email(), i.get_endereco()))
-        print(" {0} ".format(150*"-"))
+        print(" {0} ".format(160*"-"))
     
     @classmethod
     def editar(cls, index, clt, nome, telefone, cpf, email, endereco):
@@ -77,13 +78,23 @@ class ControllerFuncionario:
         DAOfuncionario.zerar()
         for i in cls.funcionario:
             DAOfuncionario.salvar(i)
+
     @classmethod
-    def pesquisar(cls, nome):
+    def pesquisar_nome(cls, nome):
         cls.funcionario = DAOfuncionario.ler()
         for i in cls.funcionario:
             if i.get_nome() == nome:
                 return cls.funcionario.index(i)
         return -1
+    
+    @classmethod
+    def pesquisar_id(cls, id):
+        cls.funcionario = DAOfuncionario.ler()
+        for i in cls.funcionario:
+            if i.get_id() == int(id):
+                return cls.funcionario.index(i)
+        return -1
+
 
 class ControllerFornecedor:
     pass
