@@ -25,9 +25,8 @@ class DAOcliente:
             return cliente
     @classmethod
     def verificar_nome(cls, nome):
-        cliente = cls.ler()
-        for i in cliente:
-            if nome == i.get_nome():
+        cliente = list(filter(lambda x: x.get_nome() == nome, cls.ler()))
+        if len(cliente) == 1:
                 return True
         return False
         
@@ -57,9 +56,8 @@ class DAOfuncionario:
             return funcionarios
     @classmethod
     def verificar_nome(cls, nome):
-        funcionario = cls.ler()
-        for i in funcionario:
-            if nome == i.get_nome():
+        funcionario = list(filter(lambda x: x.get_nome == nome, cls.ler()))
+        if len(funcionario) == 1:
                 return True
         return False
         
@@ -85,9 +83,8 @@ class DAOcategoria:
             return categoria
     @classmethod
     def verificar(cls, categoria):
-        categorias = cls.ler()
-        for i in categorias:
-            if categoria.lower() == i.get_nome().lower():
+        categoria = list(filter(lambda x: x.get_nome.lower() == categoria.lower(), cls.ler()))
+        if len(categoria) == 1:
                 return True
         return False
 
@@ -115,10 +112,9 @@ class DAOestoque:
             return estoque
     
     @classmethod
-    def verificar(cls, produto):
-        estoque = cls.ler()
-        for i in estoque:
-            if produto.get_nome().lower() == i.get_produto().get_nome().lower():
+    def verificar(cls, produto : Produto):
+        estoque = list(filter(lambda x: x.get_produto().get_nome().lower() == produto.get_nome().lower(), cls.ler()))
+        if len(estoque) == 1:
                 return True
         return False
     
