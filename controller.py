@@ -101,27 +101,41 @@ class ControllerFornecedor:
 
 class ControllerCategoria:
     @classmethod
-    def cadastrar(cls, categoria):
-        if len(categoria) > 4 and not DAOcategoria.verificar(categoria):
-            DAOcategoria.salvar(Categoria(categoria))
-            return True
-        return False
+    def cadastrar(cls, novaCategoria):
+        if len(novaCategoria) > 4 and not DAOcategoria.verificar(novaCategoria):
+            DAOcategoria.salvar(Categoria(novaCategoria))
+            print("Categoria cadastrada com sucesso.\n\n")
+        print("Falha ao cadastrar Categoria.\nERRO: Categoria ja existe.\n\n")
     
     @classmethod
-    def editar(cls, index, nome):
-        if len(nome) > 0 and nome != cls.categoria[index].get_nome():
-            cls.categoria[index] = Categoria(nome)
-            DAOcategoria.zerar()
-            for i in cls.categoria:
-                DAOcategoria.salvar(i)
+    def editar(cls, categoriaAlterar, categoriaAlteracao):
+        index = cls.pesquisar(categoriaAlterar)
+        if index != -1:
+            if not DAOcategoria.verificar(categoriaAlteracao):
+                if len(categoriaAlteracao) > 0:
+                    cls.categoria[index] = Categoria(categoriaAlteracao)
+                    DAOcategoria.zerar()
+                    for i in cls.categoria:
+                        DAOcategoria.salvar(i)
+                    print(f"Categoria {categoriaAlterar} alterada para {categoriaAlteracao} com sucesso!")
+                else:
+                    print("A nova categoria nao pode ser vazia!\n\n")
+            else:
+                print(f"A categoria {categoriaAlteracao} ja existe!\n\n")
+        else:
+            print(f"Categoria {categoriaAlterar} nao existe.\n\n")
     
     @classmethod
-    def deletar(cls, index):
+    def deletar(cls, categoriaDeletar):
+        index = cls.pesquisar(categoriaDeletar)
         if index != -1:
             cls.categoria.pop(index)
             DAOcategoria.zerar()
             for i in cls.categoria:
                 DAOcategoria.salvar(i)
+            print("Categoria {} deletada com sucesso!\n\n".format(categoriaDeletar))
+        else:
+            print("Falha ao deletar categoria {}!\nERRO: categoria nao existe.".format(categoriaDeletar))
     
     @classmethod
     def ver_categoria(cls):
@@ -134,11 +148,11 @@ class ControllerCategoria:
             print(f" {19*'-'} ")
 
     @classmethod
-    def pesquisar(cls, nome):
+    def pesquisar(cls, nomeCategoria):
         cls.categoria = DAOcategoria.ler()
-        for i in cls.categoria:
-            if nome.lower() == i.get_nome().lower():
-                return cls.categoria.index(i)
+        index_categoria = list(filter(lambda x: x.get_nome().lower() == nomeCategoria.lower(), cls.categoria))
+        if len(index_categoria) > 0:
+            return cls.categoria.index(index_categoria[0])
         return -1
 
 class ControllerEstoque:

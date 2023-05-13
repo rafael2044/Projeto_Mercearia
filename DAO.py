@@ -83,7 +83,7 @@ class DAOcategoria:
             return categoria
     @classmethod
     def verificar(cls, categoria):
-        categoria = list(filter(lambda x: x.get_nome.lower() == categoria.lower(), cls.ler()))
+        categoria = list(filter(lambda x: x.get_nome().lower() == categoria.lower(), cls.ler()))
         if len(categoria) == 1:
                 return True
         return False
