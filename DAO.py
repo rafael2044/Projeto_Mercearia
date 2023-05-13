@@ -2,6 +2,11 @@ from model import Cliente, Funcionario, Categoria,Produto, Estoque, Venda
 
 class DAOcliente:
     @classmethod
+    def zerar(cls):
+        with open("db/clientes.txt", "w") as arq:
+            arq.writelines("")
+
+    @classmethod
     def salvar(cls, cliente:Cliente):
         with open("db/clientes.txt", 'a+') as arq:
             arq.writelines(cliente.get_nome() + "|" + cliente.get_telefone() + "|" 

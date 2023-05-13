@@ -130,9 +130,29 @@ while True:
                 else:
                     print("Falha ao realizar cadastro!")
             if op_cliente == 3:
-                pass
+                print("\n\n\n {0} \n|{1:^20}|\n {0} ".format(20*'-',"Editar Cliente"))
+                index = ControllerCliente.pesquisar(input("Digite o nome do cliente: "))
+                if index != -1:
+                    print("Realize a alteracao: ")
+                    nome = input("Nome: ")
+                    telefone = input("Telefone: ")
+                    cpf = input("cpf: ")
+                    email = input("E-mail: ")
+                    endereco = input("Endereço: ")
+                    if ControllerCliente.editar(index, nome, telefone, cpf, email, endereco):
+                        print("Alteracoes realizadas com sucesso!")
+                    else:
+                        print("Falha na alteracao, os dados nao foram preenchidos corretamente!")
+                else:
+                    print("Falha ao realizar alteracao, o cliente nao foi encontrado!")
             if op_cliente == 4:
-                pass
+                print("\n\n\n {0} \n|{1:^20}|\n {0} ".format(20*'-',"Deletar Cliente"))
+                index = ControllerCliente.pesquisar(input("Digite o nome do cliente: "))
+                if index != -1:
+                    ControllerCliente.deletar(index)
+                    print("Cliente deletado com sucesso!")
+                else:
+                    print("Falha ao tentar deletar, cliente nao encontrado!")
     if op == 5:
         while True:
             print(" {0} \n|{1:^30}|\n {0} ".format(29*'-',"Menu Funcionario"))

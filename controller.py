@@ -17,7 +17,30 @@ class ControllerCliente:
                   .format(i.get_nome(), i.get_telefone(), i.get_cpf(),
                           i.get_email(), i.get_endereco()))
         print(" {0} ".format(119*"-"))
-        
+    @classmethod
+    def editar(cls, index, nome, telefone, cpf, email, endereco):
+        if len(nome)>0 and len(telefone) == 11 and len(cpf) == 11 and len(email) > 0 and len(endereco) > 0:
+            cls.cliente[index] = Cliente(nome, telefone, cpf, email, endereco)
+            DAOcliente.zerar()
+            for i in cls.cliente:
+                DAOcliente.salvar(i)
+            return True
+        return False
+    
+    @classmethod
+    def deletar(cls, index):
+        cls.cliente.pop(index)
+        DAOcliente.zerar()
+        for i in cls.cliente:
+            DAOcliente.salvar(i)
+
+    @classmethod
+    def pesquisar(cls, nome):
+        cls.cliente = DAOcliente.ler()
+        for i in cls.cliente:
+            if i.get_nome() == nome:
+                return cls.cliente.index(i)
+        return -1
 
 class ControllerFuncionario:
     @classmethod
