@@ -1,5 +1,5 @@
 import os.path
-from controller import ControllerEstoque, ControllerProduto, ControllerCategoria, ControllerCliente, ControllerFuncionario
+from controller import ControllerEstoque, ControllerCategoria, ControllerCliente, ControllerFuncionario
 from model import Categoria
 def criarArquivos(*nomes):
     for i in nomes:
@@ -50,20 +50,27 @@ while True:
                 print("\n\n {0} \n|{1:^20}|\n {0} ".format(19*"-" ,"Cadastrar Produto"))
                 nome = input("Nome: ")
                 categoria = input("Categoria: ")
-                valor = float(input("Valor: "))
+                try:
+                    valor = float(input("Valor: "))
+                except ValueError as e:
+                    valor = 0
+                try:
+                    quantidade = int(input("Digite a quantidade em estoque: "))
+                except ValueError as e:
+                    quantidade = 0
                 print(f" {19*'-'} ")
-                if ControllerProduto.cadastrar(nome, categoria, valor):
-                    print("Cadastro realizado com sucesso!")
-                else:
-                    print("Falha ao realizar cadastro!")
+                ControllerEstoque.cadastrar(nome, categoria, valor, quantidade)
+
             if op_produto == 2:
                 print("\n\n {0} \n|{1:^20}|\n {0} ".format(19*"-" ,"Alterar Produto"))
-                index = ControllerEstoque.pesquisar(input("Digite o nome do produto: "))
-                if index != -1:
-                    ControllerEstoque.editar(index, input("Digite o novo nome: "), input("Digite a nova Categoria: "), 
-                                                        float(input("Digite o novo valor: ")), int(input("Digite a nova quantidade: ")))
-                else:
-                    print("Falha ao editar, produto não encontrado!")
+                id = int(input("Digite o id do produto: "))
+                ControllerEstoque.editar(id, input("Digite o nome: "), input("Digite a Categoria: "), float(input("Digite o valor: ")),
+                                         int(input("Digite a quantidade")))
+            
+            if op_produto == 3:
+                print("\n\n {0} \n|{1:^20}|\n {0} ".format(19*"-" ,"Deletar Produto"))
+                id = int(input("Digite o id do produto: "))
+                ControllerEstoque.deletar(id)
                                                     
     if op == 3:
         while True:

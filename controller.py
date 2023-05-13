@@ -156,22 +156,53 @@ class ControllerCategoria:
 
 class ControllerEstoque:
     @classmethod
-    def cadastrar(cls, nome, categoria, valor, quantidade: int):
-        if not DAOestoque.verificar(nome) and DAOcategoria.verificar(categoria) and valor > 0 and quantidade > 0:
-            DAOestoque.salvar(Produto(nome, Categoria(categoria), valor), quantidade)
-            print("Produto Cadastrado com sucesso!") 
-        print("Falha ao cadastrar produto!")
+    def cadastrar(cls, nome, categoria, valor:float, quantidade: int):
+        if not DAOestoque.verificar(nome):
+            if DAOcategoria.verificar(categoria):
+                if valor > 0 and quantidade > 0:
+                    DAOestoque.salvar(Produto(nome, Categoria(categoria), valor), quantidade)
+                    print("Produto Cadastrado com sucesso!")
+                else:
+                    print("Preco ou quantidade invalidas.")
+            else:
+                print("Categoria nao existe!")
+        else:
+            print("O produto ja existe!")
        
     
     @classmethod
-    def editar(cls, index, nome, categoria, valor:float):
-        if index != -1:
-            if len(nome) > 4 and DAOcategoria.verificar(categoria) and valor > 0:
-                cls.estoque[index] = Estoque(Produto(nome, Categoria(categoria), valor), 1)
-                DAOestoque.zerar()
-                for i in cls.estoque:
-                    DAOestoque.salvar(i.get_produto(), i.get_quantidade())
+    def editar(cls, id:int, nome, categoria, valor:float, quantidade: int):
+        if cls.pesquisar_id(id):
+            if not cls.pesquisar_nome(nome):
+                if DAOcategoria.verificar(categoria):
+                    if len(nome)>4:
+                        if valor>0 and quantidade > 0: 
+                            cls.estoque = list(map(lambda x: Estoque(Produto(nome, categoria, valor), quantidade) if x.get_produto().get_id == id else x, cls.estoque))
+                            DAOestoque.zerar()
+                            for i in cls.estoque:
+                                DAOestoque.salvar(i.get_produto(), i.get_quantidade())
+                            print("Produto Alterado com sucesso!")
+                        else:
+                            print("Valor ou quantidade invalidos!")
+                    else:
+                        print("Nome invalido!")
+                else:
+                    print("Categoria nao existe!")
+            else:
+                print("O produto ja existe!")
+        else:
+            print("Id nao existe!")
     
+    @classmethod
+    def deletar(cls, id):
+        if cls.pesquisar_id(id):
+            cls.estoque.remove(list(filter(lambda x: x.get_produto().get_id() == id, cls.estoque))[0])
+            DAOestoque.zerar()
+            for i in cls.estoque:
+                DAOestoque.salvar(i.get_produto(), i.get_quantidade())
+            print("Produto deletado com sucesso!")
+        else:
+            print("Produto nao existe!")
     @classmethod
     def incrementar_estoque(cls, index, quantidade):
         cls.estoque[index].incrementar(quantidade)
@@ -197,13 +228,20 @@ class ControllerEstoque:
             print(f" {106*'-'} ")
     
     @classmethod
-    def pesquisar(cls, nome):
+    def pesquisar_nome(cls, nomeProduto):
         cls.estoque = DAOestoque.ler()
-        for i in cls.estoque:
-            if i.get_produto().get_nome() == nome:
-                return cls.estoque.index(i)
-        return -1
-
+        produto = list(filter(lambda x: x.get_produto().get_nome() == nomeProduto, cls.estoque))
+        if len(produto) == 1:
+                return True
+        return False
+    @classmethod
+    def pesquisar_id(cls, idProduto):
+        cls.estoque = DAOestoque.ler()
+        produto = list(filter(lambda x: x.get_produto().get_id() == idProduto, cls.estoque))
+        if len(produto) == 1:
+            return True
+        return False
+    
 class ControllerCaixa:
     pass
 
@@ -213,9 +251,3 @@ class ControllerVenda:
         produto = cls.estoque[index]
         pass
 
-class ControllerProduto:
-    @classmethod
-    def cadastrar(cls, nome, categoria, valor):
-        if len(nome) > 4 and DAOcategoria.verificar(categoria) and valor > 0:
-            print("if ControllerProduto")
-            ControllerEstoque.cadastrar(Produto(nome, Categoria(categoria), valor), 1)

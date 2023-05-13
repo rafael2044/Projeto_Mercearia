@@ -93,7 +93,7 @@ class DAOestoque:
     def zerar(cls):
         with open('db/estoque.txt', 'w') as arq:
             arq.writelines('')
-            
+            Produto.zerar_id()
     @classmethod
     def salvar(cls, produto: Produto, quantidade):
         with open("db/estoque.txt", 'a+') as arq:
@@ -123,12 +123,11 @@ class DAOvenda:
     @classmethod
     def salvar(cls, venda: Venda):
         with open("db/venda.txt", "a+") as arq:
-            itensVendidos = "+".join(venda.get_itensVendidos())  
             arq.writelines("{0}|{1}|{2}|{3}|{4}|{5}|{6}".format(venda.get_itensVendido().get_nome(),
                                                                 venda.get_itensVendido().get_categoria().get_nome(),
                                                                 venda.get_itensVendido().get_valor(),
-                                                                venda.get_vendedor,venda.get_comprador,
-                                                                venda.get_quantidadeVendida,venda.get_data))
+                                                                venda.get_vendedor(),venda.get_comprador(),
+                                                                venda.get_quantidadeVendida(),venda.get_data()))
             arq.writelines("\n")
     def ler(cls):
         with open("db/venda.txt", 'r') as arq:
@@ -137,6 +136,6 @@ class DAOvenda:
             cls.vendas = list(map(lambda x: x.split("|"), cls.vendas))
             vendas = []
             for i in cls.vendas:
-                vendas.append(Venda(i[0], i[1], i[2], i[3], i[4]))
+                vendas.append(Venda(Produto(i[0], Categoria(i[1]), i[2]), i[3], i[4], i[5], i[6]))
             return vendas
             
