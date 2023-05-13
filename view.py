@@ -177,5 +177,10 @@ while True:
                 else:
                     print("Falha ao realizar alteracao, o funcionario nao foi encontrado!")
             if op_funcionario == 4:
-                pass
-            
+                print("\n\n\n {0} \n|{1:^20}|\n {0} ".format(20*'-',"Deletar Funcionario"))
+                index = ControllerFuncionario.pesquisar(input("Digite o nome do funcionario: "))
+                if index != -1:
+                    ControllerFuncionario.deletar(index)
+                    print("Funcionario deletado com sucesso!")
+                else:
+                    print("Falha ao tentar deletar, funcionario nao encontrado!")

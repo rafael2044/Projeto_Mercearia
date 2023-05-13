@@ -48,6 +48,12 @@ class ControllerFuncionario:
         return False
     
     @classmethod
+    def deletar(cls, index):
+        cls.funcionario.pop(index)
+        DAOfuncionario.zerar()
+        for i in cls.funcionario:
+            DAOfuncionario.salvar(i)
+    @classmethod
     def pesquisar(cls, nome):
         cls.funcionario = DAOfuncionario.ler()
         for i in cls.funcionario:
