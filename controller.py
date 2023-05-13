@@ -105,15 +105,15 @@ class ControllerCategoria:
         if len(novaCategoria) > 4 and not DAOcategoria.verificar(novaCategoria):
             DAOcategoria.salvar(Categoria(novaCategoria))
             print("Categoria cadastrada com sucesso.\n\n")
-        print("Falha ao cadastrar Categoria.\nERRO: Categoria ja existe.\n\n")
+        else:
+            print("Falha ao cadastrar Categoria.\nERRO: Categoria ja existe.\n\n")
     
     @classmethod
     def editar(cls, categoriaAlterar, categoriaAlteracao):
-        index = cls.pesquisar(categoriaAlterar)
-        if index != -1:
+        if cls.pesquisar(categoriaAlterar):
             if not DAOcategoria.verificar(categoriaAlteracao):
                 if len(categoriaAlteracao) > 0:
-                    cls.categoria[index] = Categoria(categoriaAlteracao)
+                    cls.categoria = list(map(lambda x: Categoria(categoriaAlteracao) if x.get_nome().lower() == categoriaAlterar.lower() else x, DAOcategoria.ler()))
                     DAOcategoria.zerar()
                     for i in cls.categoria:
                         DAOcategoria.salvar(i)
@@ -127,9 +127,8 @@ class ControllerCategoria:
     
     @classmethod
     def deletar(cls, categoriaDeletar):
-        index = cls.pesquisar(categoriaDeletar)
-        if index != -1:
-            cls.categoria.pop(index)
+        if cls.pesquisar(categoriaDeletar):
+            cls.categoria.remove(list(filter(lambda x: x.get_nome().lower() == categoriaDeletar.lower(), cls.categoria))[0])
             DAOcategoria.zerar()
             for i in cls.categoria:
                 DAOcategoria.salvar(i)
@@ -150,10 +149,10 @@ class ControllerCategoria:
     @classmethod
     def pesquisar(cls, nomeCategoria):
         cls.categoria = DAOcategoria.ler()
-        index_categoria = list(filter(lambda x: x.get_nome().lower() == nomeCategoria.lower(), cls.categoria))
-        if len(index_categoria) > 0:
-            return cls.categoria.index(index_categoria[0])
-        return -1
+        categoria = list(filter(lambda x: x.get_nome().lower() == nomeCategoria.lower(), cls.categoria))
+        if len(categoria) > 0:
+            return True
+        return False
 
 class ControllerEstoque:
     @classmethod
