@@ -6,7 +6,7 @@ from datetime import datetime
 class ControllerCliente:
     @classmethod
     def cadastrar(cls, nome : str, telefone: str, cpf: str, email: str, endereco: str):
-        if len(nome)>=3 and not(DAOcliente.verificar_nome(nome)):
+        if len(nome)>=3 and not(cls.pesquisar_nome(nome)):
             if len(telefone) == 11 and len(list(filter(lambda x: x.get_telefone() == telefone, cls.cliente))) == 0:
                 if len(cpf) == 11 and len(list(filter(lambda x: x.get_cpf() == cpf, cls.cliente))) == 0:
                     if len(email.split("@")) == 2 and len(list(filter(lambda x: x.get_email() == email, cls.cliente))) == 0:
@@ -37,26 +37,29 @@ class ControllerCliente:
 
     @classmethod
     def editar(cls, nomeAlterar,nomeAlterado, telefone, cpf, email, endereco):
-        if len(nomeAlterado)>=3 and not(cls.pesquisar_nome(nomeAlterado)):
-            if len(telefone) == 11 and len(list(filter(lambda x: x.get_telefone() == telefone, cls.cliente))) == 0:
-                if len(cpf) == 11 and len(list(filter(lambda x: x.get_cpf() == cpf, cls.cliente))) == 0:
-                    if len(email.split("@")) == 2 and len(list(filter(lambda x: x.get_email() == email, cls.cliente))) == 0:
-                        if len(endereco) > 5:
-                            DAOcliente.zerar()
-                            cls.cliente = list(map(lambda x: Cliente(nomeAlterado, telefone, cpf, email, endereco) if x.get_nome() == nomeAlterar else x, cls.cliente))
-                            for i in cls.cliente:
-                                DAOcliente.salvar(i)
-                            print("Alteracoes realizadas com sucesso!")
+        if cls.pesquisar_nome(nomeAlterar):
+            if len(nomeAlterado)>=3 and not(cls.pesquisar_nome(nomeAlterado)):
+                if len(telefone) == 11 and len(list(filter(lambda x: x.get_telefone() == telefone, cls.cliente))) == 0:
+                    if len(cpf) == 11 and len(list(filter(lambda x: x.get_cpf() == cpf, cls.cliente))) == 0:
+                        if len(email.split("@")) == 2 and len(list(filter(lambda x: x.get_email() == email, cls.cliente))) == 0:
+                            if len(endereco) > 5:
+                                DAOcliente.zerar()
+                                cls.cliente = list(map(lambda x: Cliente(nomeAlterado, telefone, cpf, email, endereco) if x.get_nome() == nomeAlterar else x, cls.cliente))
+                                for i in cls.cliente:
+                                    DAOcliente.salvar(i)
+                                print("Alteracoes realizadas com sucesso!")
+                            else:
+                                print("O endereco deve conter no minimo 6 caracteres!")
                         else:
-                            print("O endereco deve conter no minimo 6 caracteres!")
+                            print("O email ja existe!")
                     else:
-                        print("O email ja existe!")
+                        print("O cpf ja existe!")
                 else:
-                    print("O cpf ja existe!")
+                    print("Telefone ja existe!")
             else:
-                print("Telefone ja existe!")
+                print("Cliente ja possui um cadastro!")
         else:
-            print("Cliente ja possui um cadastro!")
+            print("Cliente que deseja alterar nao existe!")
     @classmethod
     def deletar(cls, nomeCliente):
         if cls.pesquisar_nome(nomeCliente):
@@ -79,12 +82,11 @@ class ControllerCliente:
 class ControllerFuncionario:
     @classmethod
     def cadastrar(cls ,clt: str, nome: str, telefone: str, cpf: str, email: str,endereco: str):
-        funcionarios = DAOfuncionario.ler()
         if clt == 'sim' or clt == 'nao':
-            if len(nome)>=3 and not(DAOcliente.verificar_nome(nome)):
-                if len(telefone) == 11 and len(list(filter(lambda x: x.get_telefone() == telefone, funcionarios))) == 0:
-                    if len(cpf) == 11 and len(list(filter(lambda x: x.get_cpf() == cpf, funcionarios))) == 0:
-                        if len(email.split("@")) == 2 and len(list(filter(lambda x: x.get_email() == email, funcionarios))) == 0:
+            if len(nome)>=3 and not(cls.pesquisar_nome(nome)):
+                if len(telefone) == 11 and len(list(filter(lambda x: x.get_telefone() == telefone, cls.funcionarios))) == 0:
+                    if len(cpf) == 11 and len(list(filter(lambda x: x.get_cpf() == cpf, cls.funcionarios))) == 0:
+                        if len(email.split("@")) == 2 and len(list(filter(lambda x: x.get_email() == email, cls.funcionarios))) == 0:
                             if len(endereco) > 5:
                                 DAOfuncionario.salvar(Funcionario(clt, nome, telefone, cpf, email, endereco))
                                 print("Cadastro realizado com sucesso!")
@@ -113,37 +115,52 @@ class ControllerFuncionario:
         print(" {0} ".format(160*"-"))
     
     @classmethod
-    def editar(cls, index, clt, nome, telefone, cpf, email, endereco):
-        if len(nome)>0 and len(telefone) == 11 and len(cpf) == 11 and len(email) > 0 and len(endereco) > 0:
-            cls.funcionario[index] = Funcionario(clt, nome, telefone, cpf, email, endereco)
-            DAOfuncionario.zerar()
-            for i in cls.funcionario:
-                DAOfuncionario.salvar(i)
-            return True
-        return False
+    def editar(cls, nomeAlterar, clt, nomeAlterado, telefone, cpf, email, endereco):
+        if cls.pesquisar_nome(nomeAlterar):
+            if clt == 'sim' or clt == 'nao':
+                if len(nomeAlterado)>=3 and not(cls.pesquisar_nome(nomeAlterado)):
+                    if len(telefone) == 11 and len(list(filter(lambda x: x.get_telefone() == telefone, cls.funcionarios))) == 0:
+                        if len(cpf) == 11 and len(list(filter(lambda x: x.get_cpf() == cpf, cls.funcionarios))) == 0:
+                            if len(email.split("@")) == 2 and len(list(filter(lambda x: x.get_email() == email, cls.funcionarios))) == 0:
+                                if len(endereco) > 5:
+                                    cls.funcionarios = list(map(lambda x: Funcionario(clt ,nomeAlterado, telefone, cpf, email, endereco) if x.get_nome() == nomeAlterar else x, cls.funcionarios))
+                                    DAOfuncionario.zerar()
+                                    for i in cls.funcionarios:
+                                        DAOfuncionario.salvar(i)
+                                    print("Alteracao realizado com sucesso!")
+                                else:
+                                    print("O endereco deve conter no minimo 6 caracteres!")
+                            else:
+                                print("O email ja existe!")
+                        else:
+                            print("O cpf ja existe!")
+                    else:
+                        print("Telefone ja existe!")
+                else:
+                    print("Funcionario ja possui um cadastro!")
+            else:
+                print("A clt so pode assumir o valor 'sim' ou 'nao'!")
+        else:
+            print("Funcionario que deseja alterar nao existe!")
     
     @classmethod
-    def deletar(cls, index):
-        cls.funcionario.pop(index)
-        DAOfuncionario.zerar()
-        for i in cls.funcionario:
-            DAOfuncionario.salvar(i)
+    def deletar(cls, nomeFuncionario):
+        if cls.pesquisar_nome(nomeFuncionario):
+            cls.funcionarios.remove(list(filter(lambda x: x.get_nome() == nomeFuncionario, cls.funcionarios))[0])
+            DAOfuncionario.zerar()
+            for i in cls.funcionarios:
+                DAOfuncionario.salvar(i)
+            print("Funcionario removido com sucesso!")
+        else:
+            print("Funcionario nao existe!")
 
     @classmethod
     def pesquisar_nome(cls, nome):
-        cls.funcionario = DAOfuncionario.ler()
-        funcionario = list(filter(lambda x: x.get_nome() == nome, cls.funcionario))
+        cls.funcionarios = DAOfuncionario.ler()
+        funcionario = list(filter(lambda x: x.get_nome() == nome, cls.funcionarios))
         if len(funcionario) == 1:
             return True
         return False
-    
-    @classmethod
-    def pesquisar_id(cls, id):
-        cls.funcionario = DAOfuncionario.ler()
-        for i in cls.funcionario:
-            if i.get_id() == int(id):
-                return cls.funcionario.index(i)
-        return -1
 
 class ControllerFornecedor:
     pass
@@ -469,6 +486,6 @@ class ControllerVenda:
 
 #ControllerEstoque.ver_estoque()
 #ControllerCliente.cadastrar("Carlos Melo", "98982522521", "93845484343", "carlos.rayllan@gmail.com", "rua habitar brasil")
-ControllerCliente.editar("Carlos Melo", "Rafael", "98982522594", "07385566378","mtadayz7@gmail.com", "Rua da banana")
+ControllerFuncionario.cadastrar("sim",'Rafael Soares', "98982522554", "07385566278", "mtadayz2044@gmail.com", "Rua da banana")
 #ControllerVenda.relatorio_parcial_produto('Coca Cola 2l')
 #ControllerVenda.cadastrar("Tomate", "Rayssa Flayny", "Carlos Rayllan", 2)ff 

@@ -32,7 +32,7 @@ class DAOfuncionario:
     @classmethod
     def salvar(cls, funcionario : Funcionario):
         with open("db/funcionarios.txt", 'a+') as arq:
-            arq.writelines("{}|{}|{}|{}|{}|{}|{}".format(str(funcionario.get_id()), funcionario.get_clt(),funcionario.get_nome(),
+            arq.writelines("{}|{}|{}|{}|{}|{}|".format(funcionario.get_clt(),funcionario.get_nome(),
                            funcionario.get_telefone(),funcionario.get_cpf(), funcionario.get_email(),funcionario.get_endereco()))
             arq.writelines("\n")
 
@@ -43,16 +43,9 @@ class DAOfuncionario:
             cls.funcionario = list(map(lambda x: x.replace("\n", ""), cls.funcionario))
             cls.funcionario = list(map(lambda x: x.split('|'), cls.funcionario))
             funcionarios = []
-            Funcionario.zerar_id()
             for i in cls.funcionario:
-                funcionarios.append(Funcionario(i[1],i[2],i[3],i[4],i[5],i[6]))
+                funcionarios.append(Funcionario(i[0],i[1],i[2],i[3],i[4],i[5]))
             return funcionarios
-    @classmethod
-    def verificar_nome(cls, nome):
-        funcionario = list(filter(lambda x: x.get_nome == nome, cls.ler()))
-        if len(funcionario) == 1:
-                return True
-        return False
         
 class DAOcategoria:
     @classmethod
