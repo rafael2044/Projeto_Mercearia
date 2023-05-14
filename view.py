@@ -133,7 +133,8 @@ while True:
             
             if op_cliente == 3:
                 print("\n\n\n {0} \n|{1:^20}|\n {0} ".format(20*'-',"Editar Cliente"))
-                if ControllerCliente.pesquisar_id(input("Digite o id do cliente: ")):
+                id = int(input("Digite o id do cliente: "))
+                if ControllerCliente.pesquisar_id(id):
                     print("Realize a alteracao: ")
                         
                     nome = input("Nome(obs: conter no minimo 3 letras): ")
@@ -146,16 +147,14 @@ while True:
                         
                     endereco = input("Endereço(obs: conter no minimo 6 caracters): ")
                         
-                    ControllerCliente.editar(index, nome, telefone, cpf, email, endereco)
+                    ControllerCliente.editar(id, nome, telefone, cpf, email, endereco)
+                else:
+                    print("Cliente nao existe!")
                         
             if op_cliente == 4:
                 print("\n\n\n {0} \n|{1:^20}|\n {0} ".format(20*'-',"Deletar Cliente"))
-                index = ControllerCliente.pesquisar(input("Digite o id do cliente: "))
-                if index != -1:
-                    ControllerCliente.deletar(index)
-                    print("Cliente deletado com sucesso!")
-                else:
-                    print("Falha ao tentar deletar, cliente nao encontrado!")
+                ControllerCliente.deletar(int(input("Digite o id do cliente: ")))
+                
     if op == 5:
         while True:
             print(" {0} \n|{1:^30}|\n {0} ".format(29*'-',"Menu Funcionario"))

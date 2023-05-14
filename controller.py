@@ -24,8 +24,8 @@ class ControllerCliente:
     def editar(cls, id, nome, telefone, cpf, email, endereco):
         if not cls.pesquisar_nome(nome):
             if len(nome)>=3 and len(telefone) == 11 and len(cpf) == 11 and len(email.split("@")) > 1  and len(endereco) > 5:
-                cls.cliente = list(map(lambda x: Cliente(nome, telefone, cpf, email, endereco) if x.get_id == id else x, cls.cliente))
                 DAOcliente.zerar()
+                cls.cliente = list(map(lambda x: Cliente(nome, telefone, cpf, email, endereco) if x.get_id() == id else x, cls.cliente))
                 for i in cls.cliente:
                     DAOcliente.salvar(i)
                 print("Alteracoes realizadas com sucesso!")
@@ -44,7 +44,7 @@ class ControllerCliente:
             print("Cliente removido com sucesso")
         else:
             print("Cliente nao encontrado!")
-            
+
     @classmethod
     def pesquisar_id(cls, id):
         cls.cliente = DAOcliente.ler()
