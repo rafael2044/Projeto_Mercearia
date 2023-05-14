@@ -100,10 +100,10 @@ class ControllerFuncionario:
     @classmethod
     def pesquisar_nome(cls, nome):
         cls.funcionario = DAOfuncionario.ler()
-        for i in cls.funcionario:
-            if i.get_nome() == nome:
-                return cls.funcionario.index(i)
-        return -1
+        funcionario = list(filter(lambda x: x.get_nome() == nome, cls.funcionario))
+        if len(funcionario) == 1:
+            return True
+        return False
     
     @classmethod
     def pesquisar_id(cls, id):
@@ -230,7 +230,9 @@ class ControllerEstoque:
 
     @classmethod
     def decrementar_estoque(cls, id, quantidade):
-        cls.estoque = list(map(lambda x: x.decrementar(quantidade) if x.get_produto().get_id() == id else x, cls.estoque))
+        cls.estoque = DAOestoque.ler()
+        cls.estoque = list(map(lambda x: Estoque(x.get_produto(), x.get_quantidade() - quantidade) if x.get_produto().get_id() == id else x, cls.estoque))
+        cls.estoque = list(filter(lambda x: x.get_quantidade() > 0, cls.estoque))
         DAOestoque.zerar()
         for i in cls.estoque:
             DAOestoque.salvar(i.get_produto(), i.get_quantidade())
@@ -275,13 +277,12 @@ class ControllerCaixa:
 class ControllerVenda:
     @classmethod
     def cadastrar(cls, nomeProduto, vendedor, comprador, quantidadeVendida: int):
-
         if ControllerEstoque.pesquisar_nome(nomeProduto):
             produto = ControllerEstoque.retorna_produto(nomeProduto)
             if ControllerFuncionario.pesquisar_nome(vendedor) and ControllerCliente.pesquisar_nome(comprador):
-                if quantidadeVendida > 0 and ControllerEstoque.quantidade_estoque(nomeProduto) > quantidadeVendida:
-                    DAOvenda.salvar(Venda(produto, vendedor, comprador, quantidadeVendida))
-                    ControllerEstoque.decrementar_estoque(produto.get_id(), quantidadeVendida)
+                if quantidadeVendida > 0 and ControllerEstoque.quantidade_estoque(nomeProduto) - quantidadeVendida >= 0:
+                    DAOvenda.salvar(Venda(produto.get_produto(), vendedor, comprador, quantidadeVendida))
+                    ControllerEstoque.decrementar_estoque(produto.get_produto().get_id(), quantidadeVendida)
                     print("Venda realizada com sucesso!")
                 else:
                     print("Falha ao realizar Venda. quantidade invalida ou estoque baixo!")
@@ -293,11 +294,14 @@ class ControllerVenda:
     @classmethod
     def ver_vendas(cls):
         cls.vendas = DAOvenda.ler()
-        print(" {7} \n|{0:^30}|{1:^15}|{2:^10}|{3:^30}|{4:^30}|{5:^10}|{6:^15}|\n {7} "
-              .format('NOME PRODUTO','CATEGORIA', 'VALOR', 'VENDEDOR', 'COMPRADOR', 'QUANTIDADE', "DATA", 140*'-'))
-        for i in cls.estoque:
-            print("|{0:^30}|{1:15}|{2:10}|{3:>30}|{4:>30}|{5:10}|{6:15}|"
+        print(" {8} \n|{0:^30}|{1:^15}|{2:^10}|{3:^30}|{4:^30}|{5:^10}|{6:^15}|{7:^15}|\n {8} "
+              .format('NOME PRODUTO','CATEGORIA', 'PRECO', 'VENDEDOR', 'COMPRADOR', 'QUANTIDADE', "DATA", "TOTAL", 162*'-'))
+        for i in cls.vendas:
+            print("|{0:30}|{1:15}|{2:^10}|{3:30}|{4:30}|{5:^10}|{6:^15}|{7:^15}|"
                   .format(i.get_itensVendido().get_nome(), i.get_itensVendido().get_categoria().get_nome(), i.get_itensVendido().get_valor(),
-                          i.get_vendendor(), i.get_comprador(), i.get_quantidadeVendida(), i.get_data()))
-            print(f" {140*'-'} ")
+                          i.get_vendedor(), i.get_comprador(), i.get_quantidadeVendida(), i.get_data(),
+                          str(i.get_total())))
+            print(f" {162*'-'} ")
 
+ControllerVenda.ver_vendas()
+#ControllerEstoque.cadastrar("Coca Cola 2l", "Bebida", 8.50, 100)

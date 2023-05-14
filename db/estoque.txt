@@ -1,3 +1,0 @@
-2|Coca Cola 2l|Bebida|8.5|75
-3|Tomate|Frutas|5.5|1
-4|Cheiro Verde|Legumes|3.0|120

@@ -112,7 +112,7 @@ class Estoque:
         if quantidade > 0:
             self._quantidade += quantidade
     def decrementar(self, quantidade):
-        if quantidade > 0 and self._quantidade >= quantidade:
+        if quantidade > 0 and self._quantidade - quantidade > 0:
             self._quantidade -= quantidade
 
 class Venda:
@@ -133,3 +133,5 @@ class Venda:
         return self._quantidadeVendida
     def get_data(self):
         return self._data
+    def get_total(self):
+        return float(self._itensVendido.get_valor()) * int(self._quantidadeVendida)

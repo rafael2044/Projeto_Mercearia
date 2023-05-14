@@ -130,6 +130,7 @@ class DAOvenda:
                                                                 venda.get_vendedor(),venda.get_comprador(),
                                                                 venda.get_quantidadeVendida(),venda.get_data()))
             arq.writelines("\n")
+    @classmethod
     def ler(cls):
         with open("db/venda.txt", 'r') as arq:
             cls.vendas = arq.readlines()
