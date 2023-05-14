@@ -275,7 +275,7 @@ class ControllerEstoque:
 
 class ControllerVenda:
     @classmethod
-    def cadastrar(cls, nomeProduto, vendedor, comprador, quantidadeVendida: int, data = None):
+    def cadastrar(cls, nomeProduto, vendedor, comprador, quantidadeVendida: int):
         if ControllerEstoque.pesquisar_nome(nomeProduto):
             produto = ControllerEstoque.retorna_produto(nomeProduto)
             if ControllerFuncionario.pesquisar_nome(vendedor) and ControllerCliente.pesquisar_nome(comprador):
@@ -289,11 +289,11 @@ class ControllerVenda:
                 print("Comprador ou Vendedor nao cadastrados!")
         else:
             print("Produto informado nao existe!")
-    
     @classmethod
     def relatorio_geral(cls):
         cls.vendas = DAOvenda.ler()
         relatorio = cls.pesquisa_geral()
+        total = 0.0
         if relatorio is not None:
             print(" {0} \n|{1:^162}|".format(162*'-', "RELATORIO GERAL"))
             print(" {8} \n|{0:^30}|{1:^15}|{2:^10}|{3:^30}|{4:^30}|{5:^10}|{6:^15}|{7:^15}|\n {8} "
@@ -304,22 +304,26 @@ class ControllerVenda:
                             i['vendedor'], i['comprador'], str(i['quantidade']), i['data'],
                             str(i['total'])))
                 print(f" {162*'-'} ")
+                total += i['total']
+            print("|{2:>146}|{0:^15}|\n {1} ".format(str(total),162*'-',"TOTAL "))
         else:
             print("Nenhuma venda registrada")
-
     @classmethod
     def relatorio_parcial_data(cls, data):
         relatorio = cls.pesquisar_data(data)
+        total = 0.0
         if relatorio is not None:
             print(" {0} \n|{1:^73}|".format(73*'-', "RELATORIO DATA: " + data))
             print(" {4} \n|{0:^30}|{1:^10}|{2:^15}|{3:^15}|\n {4} "
                 .format('NOME PRODUTO', 'PRECO', 'QUANTIDADE', "TOTAL", 73*'-'))
             for i in relatorio:
-                print("|{0:30}|{1:10}|{2:^15}|{3:15}|"
+                print("|{0:30}|{1:^10}|{2:^15}|{3:^15}|"
                         .format(i['produto'], str(i['preco']), str(i['quantidade']),str(i['total'])))
                 print(f" {73*'-'} ")
+                total += i['total']
+            print("|{0:>57}|{1:^15}|\n {2} ".format("TOTAL ", str(total), 73*'-'))
         else:
-            print("O produto nao possui nenhuma venda!")
+            print("O existe nenhuma venda nesta data!")
     @classmethod
     def relatorio_parcial_produto(cls, nomeProduto):
         relatorio = cls.pesquisar_produto(nomeProduto)
@@ -327,12 +331,11 @@ class ControllerVenda:
             print(" {0} \n|{1:^73}|".format(73*'-', "RELATORIO PRODUTO: " + nomeProduto))
             print(" {4} \n|{0:^30}|{1:^10}|{2:^15}|{3:^15}|\n {4} "
                 .format('NOME PRODUTO', 'PRECO', 'QUANTIDADE', "TOTAL", 73*'-'))
-            print("|{0:30}|{1:10}|{2:^15}|{3:15}|"
+            print("|{0:30}|{1:^10}|{2:^15}|{3:^15}|"
                     .format(relatorio['produto'], str(relatorio['preco']), str(relatorio['quantidade']),str(relatorio['total'])))
             print(f" {73*'-'} ")
         else:
-            print("O produto nao possui nenhuma venda!")
-
+            print("O produto nao possui nenhuma venda ou nao existe em estoque!")
     @classmethod
     def pesquisar_data(cls, data):
         cls.vendas = DAOvenda.ler()
@@ -345,8 +348,8 @@ class ControllerVenda:
                 if len(list(filter(lambda x: x['produto'] == nome, relatorio))) == 0:
                     relatorio.append({'produto':nome, 'quantidade':int(quantidade), 'preco':i.get_itensVendido().get_valor(), 'total':float(i.get_total())})
                 else:
-                    relatorio = list(map(lambda x: {'produto':nome, 'quantidade':x['quantidade'] + int(quantidade), 'preco':x['preco'], 'total':x['total'] + float(i.get_total())} 
-                                         if x['produto'] == nome else x, relatorio))
+                    relatorio = list(map(lambda x: {'produto':nome, 'quantidade':x['quantidade'] + int(quantidade), 'preco':x['preco'], 
+                                                    'total':x['total'] + float(i.get_total())} if x['produto'] == nome else x, relatorio))
                 ordenado = sorted(relatorio, key=lambda k: k['produto'])
             return ordenado
         else:
@@ -374,21 +377,21 @@ class ControllerVenda:
             for i in cls.vendas:
                 nome = i.get_itensVendido().get_nome()
                 quantidade = i.get_quantidadeVendida()
-                if len(list(filter(lambda x: x['produto'] == nome and x['data'] == i.get_data(), relatorio))) == 0:
-                    relatorio.append({'produto':nome, 'categoria':i.get_itensVendido().get_categoria().get_nome(), 
-                                      'preco':i.get_itensVendido().get_valor(),'vendedor':i.get_vendedor(), 'comprador': i.get_comprador(),
-                                      'quantidade':int(quantidade),'data':i.get_data(), 'total':float(i.get_total())})
+                if len(list(filter(lambda x: x['produto'] == nome and x['data'] == i.get_data() and x['comprador'] == i.get_comprador() and
+                                   x['vendedor'] == i.get_vendedor(), relatorio))) == 0:
+                    relatorio.append({'produto':nome, 'categoria':i.get_itensVendido().get_categoria().get_nome(), 'preco':i.get_itensVendido().get_valor(),
+                                      'vendedor':i.get_vendedor(), 'comprador': i.get_comprador(),'quantidade':int(quantidade),'data':i.get_data(), 
+                                      'total':float(i.get_total())})
                 else:
-                    relatorio = list(map(lambda x: {'produto':x['produto'], 'categoria':x['categoria'],'preco':x['preco'],
-                                                    'vendedor':x['vendedor'], 'comprador':x['comprador'],
-                                                    'quantidade':x['quantidade'] + int(quantidade),'data':x['data'],
-                                                    'total':x['total'] + float(i.get_total())} 
-                                         if x['produto'] == nome and x['data'] == i.get_data() else x, relatorio))
-                ordenado = sorted(relatorio, key=lambda k: k['data'])
+                    relatorio = list(map(lambda x: {'produto':x['produto'], 'categoria':x['categoria'],'preco':x['preco'],'vendedor':x['vendedor'], 
+                                                    'comprador':x['comprador'],'quantidade':x['quantidade'] + int(quantidade),'data':x['data'],
+                                                    'total':x['total'] + float(i.get_total())} if x['produto'] == nome and x['data'] == i.get_data() and
+                                                    x['comprador'] == i.get_comprador() and x['vendedor'] == i.get_vendedor() else x, relatorio))
+            ordenado = sorted(relatorio, key=lambda k: k['data'])
             return ordenado
         else:
             return None
-ControllerVenda.relatorio_parcial_data("14/05/2023")
-ControllerVenda.relatorio_parcial_produto("Coca Cola 2l")
-ControllerVenda.relatorio_geral()
-#ControllerVenda.cadastrar("Tomate", "Rayssa Flayny", "Carlos Rayllan", 2)
+
+#ControllerVenda.cadastrar("Maracuja", 'Rayssa Flayny',"Carlos Rayllan", 10)
+ControllerVenda.relatorio_parcial_produto("Maracuja")
+#ControllerVenda.cadastrar("Tomate", "Rayssa Flayny", "Carlos Rayllan", 2)ff 
