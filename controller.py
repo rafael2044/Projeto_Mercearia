@@ -1,6 +1,8 @@
 from DAO import DAOcliente, DAOfuncionario, DAOcategoria, DAOestoque, DAOvenda
 from model import Cliente, Funcionario, Categoria, Produto, Estoque, Venda
 from functools import reduce
+from datetime import datetime
+
 class ControllerCliente:
     @classmethod
     def cadastrar(cls, nome : str, telefone: str, cpf: str, email: str, endereco: str):
@@ -114,7 +116,6 @@ class ControllerFuncionario:
                 return cls.funcionario.index(i)
         return -1
 
-
 class ControllerFornecedor:
     pass
 
@@ -151,6 +152,14 @@ class ControllerCategoria:
             DAOcategoria.zerar()
             for i in cls.categoria:
                 DAOcategoria.salvar(i)
+            estoque = DAOestoque.ler()
+            DAOestoque.zerar()
+            estoque = list(map(lambda x: Estoque(Produto(x.get_produto().get_nome(), Categoria(""), x.get_produto().get_valor()),
+                                                 x.get_quantidade()) if x.get_produto().get_categoria().get_nome() == categoriaDeletar else x, estoque))
+            print(estoque)
+            for i in estoque:
+                DAOestoque.salvar(i.get_produto(), i.get_quantidade())
+
             print("Categoria {} deletada com sucesso!\n\n".format(categoriaDeletar))
         else:
             print("Falha ao deletar categoria {}!\nERRO: categoria nao existe.".format(categoriaDeletar))
@@ -188,7 +197,6 @@ class ControllerEstoque:
         else:
             print("O produto ja existe!")
        
-    
     @classmethod
     def editar(cls, id:int, nome, categoria, valor:float, quantidade: int):
         if cls.pesquisar_id(id):
@@ -325,6 +333,22 @@ class ControllerVenda:
         else:
             print("O existe nenhuma venda nesta data!")
     @classmethod
+    def relatorio_periodo(cls, dataInicial, dataFinal):
+        relatorio = cls.pesquisar_periodo(dataInicial, dataFinal)
+        total = 0.0
+        if relatorio is not None:
+            print(" {0} \n|{1:^73}|".format(87*'-', "RELATORIO PERIODO: " + dataInicial + " - " + dataFinal))
+            print(" {4} \n|{0:^30}|{1:^10}|{2:^15}|{3:^15}|{4:^15}|\n {4} "
+                .format('NOME PRODUTO', 'PRECO', 'QUANTIDADE', 'DATA', "TOTAL", 89*'-'))
+            for i in relatorio:
+                print("|{0:30}|{1:^10}|{2:^15}|{3:^15}|{4:^15}|"
+                        .format(i['produto'], str(i['preco']), str(i['quantidade']),i['data'],str(i['total'])))
+                print(f" {89*'-'} ")
+                total += i['total']
+            print("|{0:>73}|{1:^15}|\n {2} ".format("TOTAL ", str(total), 89*'-'))
+        else:
+            print("O existe nenhuma venda nesta data!")
+    @classmethod
     def relatorio_parcial_produto(cls, nomeProduto):
         relatorio = cls.pesquisar_produto(nomeProduto)
         if relatorio is not None:
@@ -351,6 +375,27 @@ class ControllerVenda:
                     relatorio = list(map(lambda x: {'produto':nome, 'quantidade':x['quantidade'] + int(quantidade), 'preco':x['preco'], 
                                                     'total':x['total'] + float(i.get_total())} if x['produto'] == nome else x, relatorio))
                 ordenado = sorted(relatorio, key=lambda k: k['produto'])
+            return ordenado
+        else:
+            return None
+    @classmethod
+    def pesquisar_periodo(cls, dataInicial, dataFinal):
+        cls.vendas = DAOvenda.ler()
+        dataInicial = datetime.strptime(dataInicial, "%d/%m/%Y")
+        dataFinal = datetime.strptime(dataFinal, "%d/%m/%Y")
+
+        vendas = list(filter(lambda x: datetime.strptime(x.get_data(), "%d/%m/%Y") >= dataInicial and datetime.strptime(x.get_data(), "%d/%m/%Y") <= dataFinal, cls.vendas))
+        if len(vendas)>0:
+            relatorio=[]
+            for i in vendas:
+                nome = i.get_itensVendido().get_nome()
+                quantidade = i.get_quantidadeVendida()
+                if len(list(filter(lambda x: x['produto'] == nome and x['data'] == i.get_data(), relatorio))) == 0:
+                    relatorio.append({'produto':nome, 'quantidade':int(quantidade), 'preco':i.get_itensVendido().get_valor(), 'data': i.get_data(),'total':float(i.get_total())})
+                else:
+                    relatorio = list(map(lambda x: {'produto':nome, 'quantidade':x['quantidade'] + int(quantidade), 'preco':x['preco'], 
+                                                    'data': x['data'],'total':x['total'] + float(i.get_total())} if x['produto'] == nome and x['data'] == i.get_data() else x, relatorio))
+                ordenado = sorted(relatorio, key=lambda k: k['data'])
             return ordenado
         else:
             return None
@@ -391,7 +436,8 @@ class ControllerVenda:
             return ordenado
         else:
             return None
-
 #ControllerVenda.cadastrar("Maracuja", 'Rayssa Flayny',"Carlos Rayllan", 10)
-ControllerVenda.relatorio_parcial_produto("Maracuja")
+ControllerCategoria.deletar('Frutas')
+ControllerEstoque.ver_estoque()
+#ControllerVenda.relatorio_parcial_produto('Coca Cola 2l')
 #ControllerVenda.cadastrar("Tomate", "Rayssa Flayny", "Carlos Rayllan", 2)ff 

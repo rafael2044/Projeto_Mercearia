@@ -1,3 +1,4 @@
-email = "Rayssa.Amorrim"
-list_email = email.split("@")
-print(list_email)
+from datetime import datetime
+
+date = datetime.strptime("14/05/2023", "%d/%m/%Y")
+print(date)
