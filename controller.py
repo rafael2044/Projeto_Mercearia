@@ -175,19 +175,19 @@ class ControllerCategoria:
             print("Falha ao cadastrar Categoria.\nERRO: Categoria ja existe.\n\n")
     
     @classmethod
-    def editar(cls, categoriaAlterar, categoriaAlteracao):
+    def editar(cls, categoriaAlterar, categoriaAlterada):
         if cls.pesquisar(categoriaAlterar):
-            if not DAOcategoria.verificar(categoriaAlteracao):
-                if len(categoriaAlteracao) > 0:
-                    cls.categoria = list(map(lambda x: Categoria(categoriaAlteracao) if x.get_nome().lower() == categoriaAlterar.lower() else x, DAOcategoria.ler()))
+            if not DAOcategoria.verificar(categoriaAlterada):
+                if len(categoriaAlterada) > 0:
+                    cls.categoria = list(map(lambda x: Categoria(categoriaAlterada) if x.get_nome() == categoriaAlterar else x, cls.categoria))
                     DAOcategoria.zerar()
                     for i in cls.categoria:
                         DAOcategoria.salvar(i)
-                    print(f"Categoria {categoriaAlterar} alterada para {categoriaAlteracao} com sucesso!")
+                    print(f"Categoria {categoriaAlterar} alterada para {categoriaAlterada} com sucesso!")
                 else:
                     print("A nova categoria nao pode ser vazia!\n\n")
             else:
-                print(f"A categoria {categoriaAlteracao} ja existe!\n\n")
+                print(f"A categoria {categoriaAlterada} ja existe!\n\n")
         else:
             print(f"Categoria {categoriaAlterar} nao existe.\n\n")
     
