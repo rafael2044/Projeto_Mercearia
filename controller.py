@@ -6,11 +6,24 @@ from datetime import datetime
 class ControllerCliente:
     @classmethod
     def cadastrar(cls, nome : str, telefone: str, cpf: str, email: str, endereco: str):
-        if (len(nome)>=3 and len(telefone) == 11 and len(cpf) == 11 and len(email)>10 and len(endereco)>5) and not(DAOcliente.verificar_nome(nome)):
-            DAOcliente.salvar(Cliente(nome, telefone, cpf, email,endereco))
-            print("Cadastro realizado com sucesso!")
+        clientes = DAOcliente.ler()
+        if len(nome)>=3 and not(DAOcliente.verificar_nome(nome)):
+            if len(telefone) == 11 and len(list(filter(lambda x: x.get_telefone() == telefone, clientes))) == 0:
+                if len(cpf) == 11 and len(list(filter(lambda x: x.get_cpf() == cpf, clientes))) == 0:
+                    if len(email.split("@")) == 2 and len(list(filter(lambda x: x.get_email() == email, clientes))) == 0:
+                        if len(endereco) > 5:
+                            DAOcliente.salvar(Cliente(nome, telefone, cpf, email,endereco))
+                            print("Cadastro realizado com sucesso!")
+                        else:
+                            print("O endereco deve conter no minimo 6 caracteres!")
+                    else:
+                        print("O email ja existe!")
+                else:
+                    print("O cpf ja existe!")
+            else:
+                print("Telefone ja existe!")
         else:
-            print("Erro ao cadastrar cliente!")
+            print("Clinte ja possui um cadastro!")
         
     @classmethod
     def ver_clientes(cls):
@@ -22,21 +35,30 @@ class ControllerCliente:
                   .format(i.get_id() ,i.get_nome(), i.get_telefone(), i.get_cpf(),
                           i.get_email(), i.get_endereco()))
         print(" {0} ".format(130*"-"))
-    @classmethod
 
+    @classmethod
     def editar(cls, id, nome, telefone, cpf, email, endereco):
-        if not cls.pesquisar_nome(nome):
-            if len(nome)>=3 and len(telefone) == 11 and len(cpf) == 11 and len(email.split("@")) > 1  and len(endereco) > 5:
-                DAOcliente.zerar()
-                cls.cliente = list(map(lambda x: Cliente(nome, telefone, cpf, email, endereco) if x.get_id() == id else x, cls.cliente))
-                for i in cls.cliente:
-                    DAOcliente.salvar(i)
-                print("Alteracoes realizadas com sucesso!")
+        clientes = DAOcliente.ler()
+        if len(nome)>=3 and not(DAOcliente.verificar_nome(nome)):
+            if len(telefone) == 11 and len(list(filter(lambda x: x.get_telefone() == telefone, clientes))) == 0:
+                if len(cpf) == 11 and len(list(filter(lambda x: x.get_cpf() == cpf, clientes))) == 0:
+                    if len(email.split("@")) == 2 and len(list(filter(lambda x: x.get_email() == email, clientes))) == 0:
+                        if len(endereco) > 5:
+                            DAOcliente.zerar()
+                            clientes = list(map(lambda x: Cliente(nome, telefone, cpf, email, endereco) if x.get_id() == id else x, clientes))
+                            for i in clientes:
+                                DAOcliente.salvar(i)
+                            print("Alteracoes realizadas com sucesso!")
+                        else:
+                            print("O endereco deve conter no minimo 6 caracteres!")
+                    else:
+                        print("O email ja existe!")
+                else:
+                    print("O cpf ja existe!")
             else:
-                print("Falha ao inserir dados!")
+                print("Telefone ja existe!")
         else:
-            print("Cliente ja existe")
-    
+            print("Clinte ja possui um cadastro!")
     @classmethod
     def deletar(cls, id):
         if cls.pesquisar_id(id):
@@ -437,7 +459,7 @@ class ControllerVenda:
         else:
             return None
 #ControllerVenda.cadastrar("Maracuja", 'Rayssa Flayny',"Carlos Rayllan", 10)
-ControllerCategoria.deletar('Frutas')
 ControllerEstoque.ver_estoque()
+ControllerCliente.cadastrar("Carlos Melo", "98982522521", "93845484343", "carlos.rayllan@gmail.com", "rua habitar brasil")
 #ControllerVenda.relatorio_parcial_produto('Coca Cola 2l')
 #ControllerVenda.cadastrar("Tomate", "Rayssa Flayny", "Carlos Rayllan", 2)ff 
