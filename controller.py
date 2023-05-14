@@ -1,5 +1,5 @@
-from DAO import DAOcliente, DAOfuncionario, DAOcategoria, DAOestoque
-from model import Cliente, Funcionario, Categoria, Produto, Estoque
+from DAO import DAOcliente, DAOfuncionario, DAOcategoria, DAOestoque, DAOvenda
+from model import Cliente, Funcionario, Categoria, Produto, Estoque, Venda
 class ControllerCliente:
     @classmethod
     def cadastrar(cls, nome : str, telefone: str, cpf: str, email: str, endereco: str):
@@ -42,6 +42,13 @@ class ControllerCliente:
             if i.get_id() == int(id):
                 return cls.cliente.index(i)
         return -1
+    @classmethod
+    def pesquisar_nome(cls, nomeCliente):
+        cls.cliente = DAOcliente.ler()
+        cliente = list(filter(lambda x: x.get_nome() == nomeCliente, cls.cliente))
+        if len(cliente) == 1:
+            return True
+        return False
 
 class ControllerFuncionario:
     @classmethod
@@ -211,13 +218,16 @@ class ControllerEstoque:
             DAOestoque.salvar(i.get_produto(), i.get_quantidade())
 
     @classmethod
-    def decrementar_estoque(cls, index, quantidade):
-        cls.estoque[index].decrementar(quantidade)
+    def decrementar_estoque(cls, id, quantidade):
+        cls.estoque = list(map(lambda x: x.decrementar(quantidade) if x.get_produto().get_id() == id else x, cls.estoque))
         DAOestoque.zerar()
         for i in cls.estoque:
             DAOestoque.salvar(i.get_produto(), i.get_quantidade())
             
-
+    @classmethod
+    def quantidade_estoque(cls, nomeProduto):
+        if cls.pesquisar_nome(nomeProduto):
+            return cls.retorna_produto(nomeProduto).get_quantidade()
     @classmethod
     def ver_estoque(cls):
         cls.estoque = DAOestoque.ler()
@@ -242,12 +252,41 @@ class ControllerEstoque:
             return True
         return False
     
+    @classmethod
+    def retorna_produto(cls, nomeProduto):
+        if cls.pesquisar_nome(nomeProduto):
+            return list(filter(lambda x: x.get_produto(), cls.estoque))[0]
+        else:
+            return None
 class ControllerCaixa:
     pass
 
 class ControllerVenda:
     @classmethod
-    def cadastrar(cls, index, vendedor, comprador, quantidadeVendida):
-        produto = cls.estoque[index]
-        pass
+    def cadastrar(cls, nomeProduto, vendedor, comprador, quantidadeVendida: int):
+
+        if ControllerEstoque.pesquisar_nome(nomeProduto):
+            produto = ControllerEstoque.retorna_produto(nomeProduto)
+            if ControllerFuncionario.pesquisar_nome(vendedor) and ControllerCliente.pesquisar_nome(comprador):
+                if quantidadeVendida > 0 and ControllerEstoque.quantidade_estoque(nomeProduto) > quantidadeVendida:
+                    DAOvenda.salvar(Venda(produto, vendedor, comprador, quantidadeVendida))
+                    ControllerEstoque.decrementar_estoque(produto.get_id(), quantidadeVendida)
+                    print("Venda realizada com sucesso!")
+                else:
+                    print("Falha ao realizar Venda. quantidade invalida ou estoque baixo!")
+            else:
+                print("Comprador ou Vendedor nao cadastrados!")
+        else:
+            print("Produto informado nao existe!")
+    
+    @classmethod
+    def ver_vendas(cls):
+        cls.vendas = DAOvenda.ler()
+        print(" {7} \n|{0:^30}|{1:^15}|{2:^10}|{3:^30}|{4:^30}|{5:^10}|{6:^15}|\n {7} "
+              .format('NOME PRODUTO','CATEGORIA', 'VALOR', 'VENDEDOR', 'COMPRADOR', 'QUANTIDADE', "DATA", 140*'-'))
+        for i in cls.estoque:
+            print("|{0:^30}|{1:15}|{2:10}|{3:>30}|{4:>30}|{5:10}|{6:15}|"
+                  .format(i.get_itensVendido().get_nome(), i.get_itensVendido().get_categoria().get_nome(), i.get_itensVendido().get_valor(),
+                          i.get_vendendor(), i.get_comprador(), i.get_quantidadeVendida(), i.get_data()))
+            print(f" {140*'-'} ")
 
