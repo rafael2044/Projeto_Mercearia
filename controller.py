@@ -269,7 +269,7 @@ class ControllerEstoque:
     @classmethod
     def retorna_produto(cls, nomeProduto):
         if cls.pesquisar_nome(nomeProduto):
-            return list(filter(lambda x: x.get_produto(), cls.estoque))[0]
+            return list(filter(lambda x: x.get_produto().get_nome() == nomeProduto, cls.estoque))[0]
         else:
             return None
 
@@ -280,10 +280,7 @@ class ControllerVenda:
             produto = ControllerEstoque.retorna_produto(nomeProduto)
             if ControllerFuncionario.pesquisar_nome(vendedor) and ControllerCliente.pesquisar_nome(comprador):
                 if quantidadeVendida > 0 and ControllerEstoque.quantidade_estoque(nomeProduto) - quantidadeVendida >= 0:
-                    if data is not None:
-                        DAOvenda.salvar(Venda(produto.get_produto(), vendedor, comprador, quantidadeVendida, data))
-                    else:
-                        DAOvenda.salvar(Venda(produto.get_produto(), vendedor, comprador, quantidadeVendida))
+                    DAOvenda.salvar(Venda(produto.get_produto(), vendedor, comprador, quantidadeVendida))
                     ControllerEstoque.decrementar_estoque(produto.get_produto().get_id(), quantidadeVendida)
                     print("Venda realizada com sucesso!")
                 else:
@@ -296,40 +293,102 @@ class ControllerVenda:
     @classmethod
     def relatorio_geral(cls):
         cls.vendas = DAOvenda.ler()
-        totais = list(map(lambda x: x.get_total(), cls.vendas))
-        total = reduce((lambda x, y: x + y), totais, 0.0)
-        print(" {0} \n|{1:^162}|".format(162*'-', "RELATORIO GERAL"))
-        print(" {8} \n|{0:^30}|{1:^15}|{2:^10}|{3:^30}|{4:^30}|{5:^10}|{6:^15}|{7:^15}|\n {8} "
-              .format('NOME PRODUTO','CATEGORIA', 'PRECO', 'VENDEDOR', 'COMPRADOR', 'QUANTIDADE', "DATA", "TOTAL", 162*'-'))
-        for i in cls.vendas:
-            print("|{0:30}|{1:15}|{2:^10}|{3:30}|{4:30}|{5:^10}|{6:^15}|{7:^15}|"
-                  .format(i.get_itensVendido().get_nome(), i.get_itensVendido().get_categoria().get_nome(), i.get_itensVendido().get_valor(),
-                          i.get_vendedor(), i.get_comprador(), i.get_quantidadeVendida(), i.get_data(),
-                          str(i.get_total())))
-            print(f" {162*'-'} ")
-        print("|{0:>160}  |".format("|VALOR TOTAL DAS VENDAS: " + str(total)))
-        print(f" {162*'-'} ")
+        relatorio = cls.pesquisa_geral()
+        if relatorio is not None:
+            print(" {0} \n|{1:^162}|".format(162*'-', "RELATORIO GERAL"))
+            print(" {8} \n|{0:^30}|{1:^15}|{2:^10}|{3:^30}|{4:^30}|{5:^10}|{6:^15}|{7:^15}|\n {8} "
+                .format('NOME PRODUTO','CATEGORIA', 'PRECO', 'VENDEDOR', 'COMPRADOR', 'QUANTIDADE', "DATA", "TOTAL", 162*'-'))
+            for i in relatorio:
+                print("|{0:30}|{1:15}|{2:^10}|{3:30}|{4:30}|{5:^10}|{6:^15}|{7:^15}|"
+                    .format(i['produto'], i['categoria'], i['preco'],
+                            i['vendedor'], i['comprador'], str(i['quantidade']), i['data'],
+                            str(i['total'])))
+                print(f" {162*'-'} ")
+        else:
+            print("Nenhuma venda registrada")
 
     @classmethod
-    def relatorio_parcial(cls, data):
-        vendas = cls.pesquisar_data(data)
-        totais = list(map(lambda x: x.get_total(), vendas))
-        total = reduce((lambda x, y: x + y), totais, 0.0)
-        print(" {0} \n|{1:^162}|".format(162*'-', "RELATORIO PARCIAL"))
-        print(" {8} \n|{0:^30}|{1:^15}|{2:^10}|{3:^30}|{4:^30}|{5:^10}|{6:^15}|{7:^15}|\n {8} "
-              .format('NOME PRODUTO','CATEGORIA', 'PRECO', 'VENDEDOR', 'COMPRADOR', 'QUANTIDADE', "DATA", "TOTAL", 162*'-'))
-        for i in vendas:
-            print("|{0:30}|{1:15}|{2:^10}|{3:30}|{4:30}|{5:^10}|{6:^15}|{7:^15}|"
-                  .format(i.get_itensVendido().get_nome(), i.get_itensVendido().get_categoria().get_nome(), i.get_itensVendido().get_valor(),
-                          i.get_vendedor(), i.get_comprador(), i.get_quantidadeVendida(), i.get_data(),
-                          str(i.get_total())))
-            print(f" {162*'-'} ")
-        print("|{0:>160}  |".format("|VALOR TOTAL DAS VENDAS: " + str(total)))
-        print(f" {162*'-'} ")
+    def relatorio_parcial_data(cls, data):
+        relatorio = cls.pesquisar_data(data)
+        if relatorio is not None:
+            print(" {0} \n|{1:^73}|".format(73*'-', "RELATORIO DATA: " + data))
+            print(" {4} \n|{0:^30}|{1:^10}|{2:^15}|{3:^15}|\n {4} "
+                .format('NOME PRODUTO', 'PRECO', 'QUANTIDADE', "TOTAL", 73*'-'))
+            for i in relatorio:
+                print("|{0:30}|{1:10}|{2:^15}|{3:15}|"
+                        .format(i['produto'], str(i['preco']), str(i['quantidade']),str(i['total'])))
+                print(f" {73*'-'} ")
+        else:
+            print("O produto nao possui nenhuma venda!")
+    @classmethod
+    def relatorio_parcial_produto(cls, nomeProduto):
+        relatorio = cls.pesquisar_produto(nomeProduto)
+        if relatorio is not None:
+            print(" {0} \n|{1:^73}|".format(73*'-', "RELATORIO PRODUTO: " + nomeProduto))
+            print(" {4} \n|{0:^30}|{1:^10}|{2:^15}|{3:^15}|\n {4} "
+                .format('NOME PRODUTO', 'PRECO', 'QUANTIDADE', "TOTAL", 73*'-'))
+            print("|{0:30}|{1:10}|{2:^15}|{3:15}|"
+                    .format(relatorio['produto'], str(relatorio['preco']), str(relatorio['quantidade']),str(relatorio['total'])))
+            print(f" {73*'-'} ")
+        else:
+            print("O produto nao possui nenhuma venda!")
+
     @classmethod
     def pesquisar_data(cls, data):
         cls.vendas = DAOvenda.ler()
-        return list(filter(lambda x: x.get_data() == data,cls.vendas))
-      
-ControllerVenda.relatorio_parcial("15/05/2023")
-#ControllerVenda.cadastrar("Coca Cola 2l", "Rayssa Flayny", "Carlos Rayllan", 20, "16/05/2023")
+        vendas = list(filter(lambda x: x.get_data() == data, cls.vendas))
+        if len(vendas)>0:
+            relatorio=[]
+            for i in vendas:
+                nome = i.get_itensVendido().get_nome()
+                quantidade = i.get_quantidadeVendida()
+                if len(list(filter(lambda x: x['produto'] == nome, relatorio))) == 0:
+                    relatorio.append({'produto':nome, 'quantidade':int(quantidade), 'preco':i.get_itensVendido().get_valor(), 'total':float(i.get_total())})
+                else:
+                    relatorio = list(map(lambda x: {'produto':nome, 'quantidade':x['quantidade'] + int(quantidade), 'preco':x['preco'], 'total':x['total'] + float(i.get_total())} 
+                                         if x['produto'] == nome else x, relatorio))
+                ordenado = sorted(relatorio, key=lambda k: k['produto'])
+            return ordenado
+        else:
+            return None
+    @classmethod
+    def pesquisar_produto(cls, nomeProduto):
+        cls.vendas = DAOvenda.ler()
+        vendas = list(filter(lambda x: x.get_itensVendido().get_nome() == nomeProduto, cls.vendas))
+        if len(vendas)>0:
+            relatorio = {"produto":nomeProduto, 'quantidade': 0, 'preco':vendas[0].get_itensVendido().get_valor(), 'total': float(vendas[0].get_total())}
+
+            for i in vendas:
+                relatorio['quantidade']+=int(i.get_quantidadeVendida())
+                relatorio['total'] += float(i.get_total())
+            return relatorio
+        return None
+        
+
+        return list(filter(lambda x: x.get_itensVendido().get_nome() == nomeProduto, cls.vendas))
+    @classmethod
+    def pesquisa_geral(cls):
+        cls.vendas = DAOvenda.ler()
+        if len(cls.vendas)>0:
+            relatorio = []
+            for i in cls.vendas:
+                nome = i.get_itensVendido().get_nome()
+                quantidade = i.get_quantidadeVendida()
+                if len(list(filter(lambda x: x['produto'] == nome and x['data'] == i.get_data(), relatorio))) == 0:
+                    relatorio.append({'produto':nome, 'categoria':i.get_itensVendido().get_categoria().get_nome(), 
+                                      'preco':i.get_itensVendido().get_valor(),'vendedor':i.get_vendedor(), 'comprador': i.get_comprador(),
+                                      'quantidade':int(quantidade),'data':i.get_data(), 'total':float(i.get_total())})
+                else:
+                    relatorio = list(map(lambda x: {'produto':x['produto'], 'categoria':x['categoria'],'preco':x['preco'],
+                                                    'vendedor':x['vendedor'], 'comprador':x['comprador'],
+                                                    'quantidade':x['quantidade'] + int(quantidade),'data':x['data'],
+                                                    'total':x['total'] + float(i.get_total())} 
+                                         if x['produto'] == nome and x['data'] == i.get_data() else x, relatorio))
+                ordenado = sorted(relatorio, key=lambda k: k['data'])
+            return ordenado
+        else:
+            return None
+ControllerVenda.relatorio_parcial_data("14/05/2023")
+ControllerVenda.relatorio_parcial_produto("Coca Cola 2l")
+ControllerVenda.relatorio_geral()
+#ControllerVenda.cadastrar("Tomate", "Rayssa Flayny", "Carlos Rayllan", 2)
