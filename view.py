@@ -117,73 +117,37 @@ while True:
                 print("\n\n")
             if op_cliente == 2:
                 print("\n\n\n {0} \n|{1:^20}|\n {0} ".format(20*'-',"Cadastrar Cliente"))
-                while True:
-                    nome = input("Nome: ")
-                    if len(nome)>=3:
-                        break
-                    print("O nome invalido! Digite novamente")
-                while True:
-                    telefone = input("Telefone: ")
-                    if len(telefone)==11:
-                        break
-                    print("Telefone invalido! Digite novamente.")
-                while True:
-                    cpf = input("cpf: ")
-                    if len(cpf) == 11:
-                        break
-                    print("Cpf invalido! Digite novamente.")
-                while True:
-                    email = input("E-mail: ")
-                    if len(email.split("@")) == 2:
-                       break
-                    print("Email Invalido! Digite novamente")
-                while True:
-                    endereco = input("Endereço: ")
-                    if len(endereco) > 5:
-                        break
-                    print("Endereco invalido! Digite novamente.")
-
-                if ControllerCliente.cadastrar(nome, telefone, cpf, email, endereco):
-                    print("Cadastro realizado com Sucesso!")
-                else:
-                    print("Falha ao realizar cadastro!")
+                
+                nome = input("Nome(obs: conter no minimo 3 letras): ")
+                   
+                telefone = input("Telefone(obs: conter 11 digitos): ")
+                    
+                cpf = input("cpf(obs: conter 11 digitos): ")
+       
+                email = input("E-mail(exemplo: meunome@instituto.com): ")
+                    
+                endereco = input("Endereço(obs: conter no minimo 6 caracters): ")
+                 
+                ControllerCliente.cadastrar(nome, telefone, cpf, email, endereco)
+                
+            
             if op_cliente == 3:
                 print("\n\n\n {0} \n|{1:^20}|\n {0} ".format(20*'-',"Editar Cliente"))
-                index = ControllerCliente.pesquisar(input("Digite o id do cliente: "))
-                if index != -1:
+                if ControllerCliente.pesquisar_id(input("Digite o id do cliente: ")):
                     print("Realize a alteracao: ")
-                    while True:
-                        nome = input("Nome: ")
-                        if len(nome)>=3:
-                            break
-                        print("O nome invalido! Digite novamente")
-                    while True:
-                        telefone = input("Telefone: ")
-                        if len(telefone)==11:
-                            break
-                        print("Telefone invalido! Digite novamente.")
-                    while True:
-                        cpf = input("cpf: ")
-                        if len(cpf) == 11:
-                            break
-                        print("Cpf invalido! Digite novamente.")
-                    while True:
-                        email = input("E-mail: ")
-                        if len(email.split("@")) == 2:
-                            break
-                        print("Email Invalido! Digite novamente")
-                    while True:
-                        endereco = input("Endereço: ")
-                        if len(endereco)>5:
-                            break
-                        print("O endereco invalido! Digite novamente.")
-
-                    if ControllerCliente.editar(index, nome, telefone, cpf, email, endereco):
-                        print("Alteracoes realizadas com sucesso!")
-                    else:
-                        print("Falha na alteracao, os dados nao foram preenchidos corretamente!")
-                else:
-                    print("Falha ao realizar alteracao, o cliente nao foi encontrado!")
+                        
+                    nome = input("Nome(obs: conter no minimo 3 letras): ")
+                    
+                    telefone = input("Telefone(obs: conter 11 digitos): ")
+                        
+                    cpf = input("cpf(obs: conter 11 digitos): ")
+        
+                    email = input("E-mail(exemplo: meunome@instituto.com): ")
+                        
+                    endereco = input("Endereço(obs: conter no minimo 6 caracters): ")
+                        
+                    ControllerCliente.editar(index, nome, telefone, cpf, email, endereco)
+                        
             if op_cliente == 4:
                 print("\n\n\n {0} \n|{1:^20}|\n {0} ".format(20*'-',"Deletar Cliente"))
                 index = ControllerCliente.pesquisar(input("Digite o id do cliente: "))

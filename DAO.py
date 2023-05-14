@@ -4,6 +4,7 @@ class DAOcliente:
     @classmethod
     def zerar(cls):
         with open("db/clientes.txt", "w") as arq:
+            Cliente.zerar_id()
             arq.writelines("")
 
     @classmethod

@@ -5,8 +5,10 @@ class ControllerCliente:
     def cadastrar(cls, nome : str, telefone: str, cpf: str, email: str, endereco: str):
         if (len(nome)>=3 and len(telefone) == 11 and len(cpf) == 11 and len(email)>10 and len(endereco)>5) and not(DAOcliente.verificar_nome(nome)):
             DAOcliente.salvar(Cliente(nome, telefone, cpf, email,endereco))
-            return True
-        return False
+            print("Cadastro realizado com sucesso!")
+        else:
+            print("Erro ao cadastrar cliente!")
+        
     @classmethod
     def ver_clientes(cls):
         clientes = DAOcliente.ler()
@@ -19,29 +21,38 @@ class ControllerCliente:
         print(" {0} ".format(130*"-"))
     @classmethod
 
-    def editar(cls, index, nome, telefone, cpf, email, endereco):
-        if len(nome)>0 and len(telefone) == 11 and len(cpf) == 11 and len(email) > 0 and len(endereco) > 0:
-            cls.cliente[index] = Cliente(nome, telefone, cpf, email, endereco)
+    def editar(cls, id, nome, telefone, cpf, email, endereco):
+        if not cls.pesquisar_nome(nome):
+            if len(nome)>=3 and len(telefone) == 11 and len(cpf) == 11 and len(email.split("@")) > 1  and len(endereco) > 5:
+                cls.cliente = list(map(lambda x: Cliente(nome, telefone, cpf, email, endereco) if x.get_id == id else x, cls.cliente))
+                DAOcliente.zerar()
+                for i in cls.cliente:
+                    DAOcliente.salvar(i)
+                print("Alteracoes realizadas com sucesso!")
+            else:
+                print("Falha ao inserir dados!")
+        else:
+            print("Cliente ja existe")
+    
+    @classmethod
+    def deletar(cls, id):
+        if cls.pesquisar_id(id):
+            cls.cliente.remove(list(filter(lambda x: x.get_id() == id, cls.cliente))[0])
             DAOcliente.zerar()
             for i in cls.cliente:
                 DAOcliente.salvar(i)
+            print("Cliente removido com sucesso")
+        else:
+            print("Cliente nao encontrado!")
+            
+    @classmethod
+    def pesquisar_id(cls, id):
+        cls.cliente = DAOcliente.ler()
+        cliente = list(filter(lambda x: x.get_id() == id, cls.cliente))
+        if len(cliente) == 1:
             return True
         return False
     
-    @classmethod
-    def deletar(cls, index):
-        cls.cliente.pop(index)
-        DAOcliente.zerar()
-        for i in cls.cliente:
-            DAOcliente.salvar(i)
-
-    @classmethod
-    def pesquisar(cls, id):
-        cls.cliente = DAOcliente.ler()
-        for i in cls.cliente:
-            if i.get_id() == int(id):
-                return cls.cliente.index(i)
-        return -1
     @classmethod
     def pesquisar_nome(cls, nomeCliente):
         cls.cliente = DAOcliente.ler()
