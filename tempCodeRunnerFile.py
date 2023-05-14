@@ -1,1 +1,1 @@
-TOTAL
+lambda x, y: x.get_total() + y

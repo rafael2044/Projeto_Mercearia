@@ -1,5 +1,6 @@
 from DAO import DAOcliente, DAOfuncionario, DAOcategoria, DAOestoque, DAOvenda
 from model import Cliente, Funcionario, Categoria, Produto, Estoque, Venda
+from functools import reduce
 class ControllerCliente:
     @classmethod
     def cadastrar(cls, nome : str, telefone: str, cpf: str, email: str, endereco: str):
@@ -271,17 +272,18 @@ class ControllerEstoque:
             return list(filter(lambda x: x.get_produto(), cls.estoque))[0]
         else:
             return None
-class ControllerCaixa:
-    pass
 
 class ControllerVenda:
     @classmethod
-    def cadastrar(cls, nomeProduto, vendedor, comprador, quantidadeVendida: int):
+    def cadastrar(cls, nomeProduto, vendedor, comprador, quantidadeVendida: int, data = None):
         if ControllerEstoque.pesquisar_nome(nomeProduto):
             produto = ControllerEstoque.retorna_produto(nomeProduto)
             if ControllerFuncionario.pesquisar_nome(vendedor) and ControllerCliente.pesquisar_nome(comprador):
                 if quantidadeVendida > 0 and ControllerEstoque.quantidade_estoque(nomeProduto) - quantidadeVendida >= 0:
-                    DAOvenda.salvar(Venda(produto.get_produto(), vendedor, comprador, quantidadeVendida))
+                    if data is not None:
+                        DAOvenda.salvar(Venda(produto.get_produto(), vendedor, comprador, quantidadeVendida, data))
+                    else:
+                        DAOvenda.salvar(Venda(produto.get_produto(), vendedor, comprador, quantidadeVendida))
                     ControllerEstoque.decrementar_estoque(produto.get_produto().get_id(), quantidadeVendida)
                     print("Venda realizada com sucesso!")
                 else:
@@ -292,8 +294,11 @@ class ControllerVenda:
             print("Produto informado nao existe!")
     
     @classmethod
-    def ver_vendas(cls):
+    def relatorio_geral(cls):
         cls.vendas = DAOvenda.ler()
+        totais = list(map(lambda x: x.get_total(), cls.vendas))
+        total = reduce((lambda x, y: x + y), totais, 0.0)
+        print(" {0} \n|{1:^162}|".format(162*'-', "RELATORIO GERAL"))
         print(" {8} \n|{0:^30}|{1:^15}|{2:^10}|{3:^30}|{4:^30}|{5:^10}|{6:^15}|{7:^15}|\n {8} "
               .format('NOME PRODUTO','CATEGORIA', 'PRECO', 'VENDEDOR', 'COMPRADOR', 'QUANTIDADE', "DATA", "TOTAL", 162*'-'))
         for i in cls.vendas:
@@ -302,6 +307,29 @@ class ControllerVenda:
                           i.get_vendedor(), i.get_comprador(), i.get_quantidadeVendida(), i.get_data(),
                           str(i.get_total())))
             print(f" {162*'-'} ")
+        print("|{0:>160}  |".format("|VALOR TOTAL DAS VENDAS: " + str(total)))
+        print(f" {162*'-'} ")
 
-ControllerVenda.ver_vendas()
-#ControllerEstoque.cadastrar("Coca Cola 2l", "Bebida", 8.50, 100)
+    @classmethod
+    def relatorio_parcial(cls, data):
+        vendas = cls.pesquisar_data(data)
+        totais = list(map(lambda x: x.get_total(), vendas))
+        total = reduce((lambda x, y: x + y), totais, 0.0)
+        print(" {0} \n|{1:^162}|".format(162*'-', "RELATORIO PARCIAL"))
+        print(" {8} \n|{0:^30}|{1:^15}|{2:^10}|{3:^30}|{4:^30}|{5:^10}|{6:^15}|{7:^15}|\n {8} "
+              .format('NOME PRODUTO','CATEGORIA', 'PRECO', 'VENDEDOR', 'COMPRADOR', 'QUANTIDADE', "DATA", "TOTAL", 162*'-'))
+        for i in vendas:
+            print("|{0:30}|{1:15}|{2:^10}|{3:30}|{4:30}|{5:^10}|{6:^15}|{7:^15}|"
+                  .format(i.get_itensVendido().get_nome(), i.get_itensVendido().get_categoria().get_nome(), i.get_itensVendido().get_valor(),
+                          i.get_vendedor(), i.get_comprador(), i.get_quantidadeVendida(), i.get_data(),
+                          str(i.get_total())))
+            print(f" {162*'-'} ")
+        print("|{0:>160}  |".format("|VALOR TOTAL DAS VENDAS: " + str(total)))
+        print(f" {162*'-'} ")
+    @classmethod
+    def pesquisar_data(cls, data):
+        cls.vendas = DAOvenda.ler()
+        return list(filter(lambda x: x.get_data() == data,cls.vendas))
+      
+ControllerVenda.relatorio_parcial("15/05/2023")
+#ControllerVenda.cadastrar("Coca Cola 2l", "Rayssa Flayny", "Carlos Rayllan", 20, "16/05/2023")
