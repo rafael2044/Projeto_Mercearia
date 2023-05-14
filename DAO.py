@@ -4,13 +4,12 @@ class DAOcliente:
     @classmethod
     def zerar(cls):
         with open("db/clientes.txt", "w") as arq:
-            Cliente.zerar_id()
             arq.writelines("")
 
     @classmethod
     def salvar(cls, cliente:Cliente):
         with open("db/clientes.txt", 'a+') as arq:
-            arq.writelines("{}|{}|{}|{}|{}|{}".format(str(cliente.get_id()) ,cliente.get_nome() ,cliente.get_telefone(),
+            arq.writelines("{}|{}|{}|{}|{}|".format(cliente.get_nome() ,cliente.get_telefone(),
                            cliente.get_cpf(), cliente.get_email(), cliente.get_endereco()))
             arq.writelines('\n')
     @classmethod
@@ -20,16 +19,9 @@ class DAOcliente:
             cls.cliente = list(map(lambda x: x.replace("\n", ""), cls.cliente))
             cls.cliente = list(map(lambda x: x.split('|'), cls.cliente))
             cliente = []
-            Cliente.zerar_id()
             for i in cls.cliente:
-                cliente.append(Cliente(i[1],i[2],i[3],i[4],i[5]))
+                cliente.append(Cliente(i[0],i[1],i[2],i[3],i[4]))
             return cliente
-    @classmethod
-    def verificar_nome(cls, nome):
-        cliente = list(filter(lambda x: x.get_nome() == nome, cls.ler()))
-        if len(cliente) == 1:
-                return True
-        return False
         
 class DAOfuncionario:
     @classmethod

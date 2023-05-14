@@ -6,11 +6,10 @@ from datetime import datetime
 class ControllerCliente:
     @classmethod
     def cadastrar(cls, nome : str, telefone: str, cpf: str, email: str, endereco: str):
-        clientes = DAOcliente.ler()
         if len(nome)>=3 and not(DAOcliente.verificar_nome(nome)):
-            if len(telefone) == 11 and len(list(filter(lambda x: x.get_telefone() == telefone, clientes))) == 0:
-                if len(cpf) == 11 and len(list(filter(lambda x: x.get_cpf() == cpf, clientes))) == 0:
-                    if len(email.split("@")) == 2 and len(list(filter(lambda x: x.get_email() == email, clientes))) == 0:
+            if len(telefone) == 11 and len(list(filter(lambda x: x.get_telefone() == telefone, cls.cliente))) == 0:
+                if len(cpf) == 11 and len(list(filter(lambda x: x.get_cpf() == cpf, cls.cliente))) == 0:
+                    if len(email.split("@")) == 2 and len(list(filter(lambda x: x.get_email() == email, cls.cliente))) == 0:
                         if len(endereco) > 5:
                             DAOcliente.salvar(Cliente(nome, telefone, cpf, email,endereco))
                             print("Cadastro realizado com sucesso!")
@@ -37,16 +36,15 @@ class ControllerCliente:
         print(" {0} ".format(130*"-"))
 
     @classmethod
-    def editar(cls, id, nome, telefone, cpf, email, endereco):
-        clientes = DAOcliente.ler()
-        if len(nome)>=3 and not(DAOcliente.verificar_nome(nome)):
-            if len(telefone) == 11 and len(list(filter(lambda x: x.get_telefone() == telefone, clientes))) == 0:
-                if len(cpf) == 11 and len(list(filter(lambda x: x.get_cpf() == cpf, clientes))) == 0:
-                    if len(email.split("@")) == 2 and len(list(filter(lambda x: x.get_email() == email, clientes))) == 0:
+    def editar(cls, nomeAlterar,nomeAlterado, telefone, cpf, email, endereco):
+        if len(nomeAlterado)>=3 and not(cls.pesquisar_nome(nomeAlterado)):
+            if len(telefone) == 11 and len(list(filter(lambda x: x.get_telefone() == telefone, cls.cliente))) == 0:
+                if len(cpf) == 11 and len(list(filter(lambda x: x.get_cpf() == cpf, cls.cliente))) == 0:
+                    if len(email.split("@")) == 2 and len(list(filter(lambda x: x.get_email() == email, cls.cliente))) == 0:
                         if len(endereco) > 5:
                             DAOcliente.zerar()
-                            clientes = list(map(lambda x: Cliente(nome, telefone, cpf, email, endereco) if x.get_id() == id else x, clientes))
-                            for i in clientes:
+                            cls.cliente = list(map(lambda x: Cliente(nomeAlterado, telefone, cpf, email, endereco) if x.get_nome() == nomeAlterar else x, cls.cliente))
+                            for i in cls.cliente:
                                 DAOcliente.salvar(i)
                             print("Alteracoes realizadas com sucesso!")
                         else:
@@ -58,11 +56,11 @@ class ControllerCliente:
             else:
                 print("Telefone ja existe!")
         else:
-            print("Clinte ja possui um cadastro!")
+            print("Cliente ja possui um cadastro!")
     @classmethod
-    def deletar(cls, id):
-        if cls.pesquisar_id(id):
-            cls.cliente.remove(list(filter(lambda x: x.get_id() == id, cls.cliente))[0])
+    def deletar(cls, nomeCliente):
+        if cls.pesquisar_nome(nomeCliente):
+            cls.cliente.remove(list(filter(lambda x: x.get_nome() == nomeCliente, cls.cliente))[0])
             DAOcliente.zerar()
             for i in cls.cliente:
                 DAOcliente.salvar(i)
@@ -70,14 +68,6 @@ class ControllerCliente:
         else:
             print("Cliente nao encontrado!")
 
-    @classmethod
-    def pesquisar_id(cls, id):
-        cls.cliente = DAOcliente.ler()
-        cliente = list(filter(lambda x: x.get_id() == id, cls.cliente))
-        if len(cliente) == 1:
-            return True
-        return False
-    
     @classmethod
     def pesquisar_nome(cls, nomeCliente):
         cls.cliente = DAOcliente.ler()
@@ -89,10 +79,27 @@ class ControllerCliente:
 class ControllerFuncionario:
     @classmethod
     def cadastrar(cls ,clt: str, nome: str, telefone: str, cpf: str, email: str,endereco: str):
-        if ((clt.lower() == 'sim' or clt.lower == 'não') and len(nome)>3 and len(telefone) == 11 and len(cpf) == 11 and len(email)>10 and len(endereco)>4) and not DAOfuncionario.verificar_nome(nome):
-            DAOfuncionario.salvar(Funcionario(clt, nome, telefone, cpf, email, endereco))
-            return True
-        return False
+        funcionarios = DAOfuncionario.ler()
+        if clt == 'sim' or clt == 'nao':
+            if len(nome)>=3 and not(DAOcliente.verificar_nome(nome)):
+                if len(telefone) == 11 and len(list(filter(lambda x: x.get_telefone() == telefone, funcionarios))) == 0:
+                    if len(cpf) == 11 and len(list(filter(lambda x: x.get_cpf() == cpf, funcionarios))) == 0:
+                        if len(email.split("@")) == 2 and len(list(filter(lambda x: x.get_email() == email, funcionarios))) == 0:
+                            if len(endereco) > 5:
+                                DAOfuncionario.salvar(Funcionario(clt, nome, telefone, cpf, email, endereco))
+                                print("Cadastro realizado com sucesso!")
+                            else:
+                                print("O endereco deve conter no minimo 6 caracteres!")
+                        else:
+                            print("O email ja existe!")
+                    else:
+                        print("O cpf ja existe!")
+                else:
+                    print("Telefone ja existe!")
+            else:
+                print("Funcionario ja possui um cadastro!")
+        else:
+            print("A clt so pode assumir o valor 'sim' ou 'nao'!")
     
     @classmethod
     def ver_funcionario(cls):
@@ -459,7 +466,9 @@ class ControllerVenda:
         else:
             return None
 #ControllerVenda.cadastrar("Maracuja", 'Rayssa Flayny',"Carlos Rayllan", 10)
-ControllerEstoque.ver_estoque()
-ControllerCliente.cadastrar("Carlos Melo", "98982522521", "93845484343", "carlos.rayllan@gmail.com", "rua habitar brasil")
+
+#ControllerEstoque.ver_estoque()
+#ControllerCliente.cadastrar("Carlos Melo", "98982522521", "93845484343", "carlos.rayllan@gmail.com", "rua habitar brasil")
+ControllerCliente.editar("Carlos Melo", "Rafael", "98982522594", "07385566378","mtadayz7@gmail.com", "Rua da banana")
 #ControllerVenda.relatorio_parcial_produto('Coca Cola 2l')
 #ControllerVenda.cadastrar("Tomate", "Rayssa Flayny", "Carlos Rayllan", 2)ff 

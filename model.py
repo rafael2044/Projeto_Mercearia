@@ -19,23 +19,9 @@ class Pessoa:
         return self._endereco
     
 class Cliente(Pessoa):
-    count_id = 0
     def __init__(self, nome, telefone, cpf, email, endereco):
         super().__init__(nome, telefone, cpf, email, endereco)
-        self._id = self.gerar_id()
-    
 
-    @classmethod
-    def gerar_id(cls):
-        cls.count_id += 1
-        return cls.count_id
-    
-    @classmethod
-    def zerar_id(cls):
-        cls.count_id = 0
-
-    def get_id(self):
-        return self._id
 
 class Funcionario(Pessoa):
     def __init__(self, clt, nome, telefone, cpf, email, endereco):
