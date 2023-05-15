@@ -1,6 +1,6 @@
 import os.path
-from controller import ControllerEstoque, ControllerCategoria, ControllerCliente, ControllerFuncionario
-from model import Categoria
+from controller import ControllerEstoque, ControllerCategoria, ControllerCliente, ControllerFuncionario, ControllerVenda
+
 def criarArquivos(*nomes):
     for i in nomes:
         if not os.path.exists(i):
@@ -13,15 +13,15 @@ criarArquivos("db/categoria.txt", 'db/clientes.txt', "db/estoque.txt", "db/forne
 while True:
     print(" {0} \n|{1:^30}|\n {0} ".format(30*'-',"Menu Incial"))
     print("|{1:30}|\n|{2:30}|\n|{3:30}|\n|{4:30}|\n|{5:30}|\n|{6:30}|\n|{7:30}|\n {0} ".format
-          (30*"-","1 - Estoque", "2 - Produto","3 - Categoria", "4 - Cliente","5 - Funcionario", "6 - Vendas","0 - Sair", 30*'-'))
-    op = int(input("Digite a opção: "))
-    if op == 0:
+          (30*"-","1 - Estoque","2 - Categoria", "3 - Cliente","4 - Funcionario", "5 - Caixa",'6 - Relatorios',"0 - Sair"))
+    op_menuInical = int(input("Digite a opção: "))
+    if op_menuInical == 0:
         break
-    if op == 1:
+    if op_menuInical == 1:
         while True:
             print(" {0} \n|{1:^30}|\n {0} ".format(30*'-',"Menu Estoque"))
-            print("|{0:30}|\n|{1:30}|\n|{2:30}|\n|{3:30}|\n {4} ".format('1 - Ver Estoque', "2 - Incrementar Estoque", 
-                                                        "3 - Decrementar Estoque", "0 - Voltar", 30*'-'))
+            print("|{0:30}|\n|{1:30}|\n|{2:30}|\n|{3:30}|\n {4} ".format('1 - Ver Estoque', "Cadastrar Produto", 
+                                                        "3 - Editar Produto", "4 - Deletar Produto", "0 - Voltar", 30*'-'))
             op_estoque = int(input("Digite a opção: "))
             if op_estoque == 0:
                 break
@@ -31,48 +31,19 @@ while True:
                 input("Digite enter para fechar...")
                 print("\n\n\n")
             if op_estoque == 2:
-                print("\n\n {0} \n|{1:^20}|\n {0} ".format(19*"-" ,"Incrementar Estoque"))
-                index = ControllerEstoque.pesquisar(input("Digite o nome do produto que deseja aumentar o estoque: "))
-                if index != -1:
-                    ControllerEstoque.incrementar_estoque(index, int(input("Digite a quantidade que deseja incrementar: ")))
-                else:
-                    print("Falha ao incrementar estoque, produto não encontrado!")
-    if op == 2:
-        while True:
-            print(" {0} \n|{1:^30}|\n {0} ".format(30*'-',"Menu Produto"))
-            print("|{0:30}|\n|{1:30}|\n|{2:30}|\n|{3:30}|\n {4} ".format('1 - Cadastrar Produto', "2 - Alterar Produto",
-                                                        "3 - Deletar Produto", "0 - Voltar", 30*'-'))
-            op_produto = int(input("Digite a opção: "))
-            if op_produto == 0:
-                break
-            
-            if op_produto == 1:
                 print("\n\n {0} \n|{1:^20}|\n {0} ".format(19*"-" ,"Cadastrar Produto"))
-                nome = input("Nome: ")
-                categoria = input("Categoria: ")
-                try:
-                    valor = float(input("Valor: "))
-                except ValueError as e:
-                    valor = 0
-                try:
-                    quantidade = int(input("Digite a quantidade em estoque: "))
-                except ValueError as e:
-                    quantidade = 0
-                print(f" {19*'-'} ")
-                ControllerEstoque.cadastrar(nome, categoria, valor, quantidade)
-
-            if op_produto == 2:
-                print("\n\n {0} \n|{1:^20}|\n {0} ".format(19*"-" ,"Alterar Produto"))
-                id = int(input("Digite o id do produto: "))
-                ControllerEstoque.editar(id, input("Digite o nome: "), input("Digite a Categoria: "), float(input("Digite o valor: ")),
+                ControllerEstoque.cadastrar(input("Nome: "), input("Categoria: "), float(input("Valor: ")), int(input("Quantidade: ")))
+            if op_estoque == 3:
+                print("\n\n {0} \n|{1:^20}|\n {0} ".format(19*"-" ,"Editar Produto"))
+                nomeAlterar = input("Digite o nome do produto: ")
+                ControllerEstoque.editar(nomeAlterar, input("Digite o novo nome: "), input("Digite a Categoria: "), float(input("Digite o valor: ")),
                                          int(input("Digite a quantidade")))
-            
-            if op_produto == 3:
+            if op_estoque == 4:
                 print("\n\n {0} \n|{1:^20}|\n {0} ".format(19*"-" ,"Deletar Produto"))
-                id = int(input("Digite o id do produto: "))
-                ControllerEstoque.deletar(id)
-                                                    
-    if op == 3:
+                nomeProduto = input("Digite o nome do produto: ")
+                ControllerEstoque.deletar(nomeProduto)
+                
+    if op_menuInical == 2:
         while True:
             print(" {0} \n|{1:^30}|\n {0} ".format(29*'-',"Menu Categoria"))
             print("|{0:30}|\n|{1:30}|\n|{2:30}|\n|{3:30}|\n|{4:30}|\n {5} ".format('1 - Ver Categoria', "2 - Cadastrar Categoria",
@@ -100,7 +71,7 @@ while True:
                 print("\n\n {0} \n|{1:^20}|\n {0} ".format(19*"-" ,"Deletar Categoria"))
                 ControllerCategoria.deletar(input("Digite o nome da categoria: "))
         
-    if op == 4:
+    if op_menuInical == 3:
         while True:
             print(" {0} \n|{1:^30}|\n {0} ".format(29*'-',"Menu Cliente"))
             print("|{0:30}|\n|{1:30}|\n|{2:30}|\n|{3:30}|\n|{4:30}|\n {5} ".format('1 - Ver Clientes', "2 - Cadastrar Cliente",
@@ -117,45 +88,19 @@ while True:
                 print("\n\n")
             if op_cliente == 2:
                 print("\n\n\n {0} \n|{1:^20}|\n {0} ".format(20*'-',"Cadastrar Cliente"))
-                
-                nome = input("Nome(obs: conter no minimo 3 letras): ")
-                   
-                telefone = input("Telefone(obs: conter 11 digitos): ")
-                    
-                cpf = input("cpf(obs: conter 11 digitos): ")
-       
-                email = input("E-mail(exemplo: meunome@instituto.com): ")
-                    
-                endereco = input("Endereço(obs: conter no minimo 6 caracters): ")
-                 
-                ControllerCliente.cadastrar(nome, telefone, cpf, email, endereco)
+                ControllerCliente.cadastrar(input("Nome: "), input("Telefone: "), input("cpf: "), input("E-mail: "), input("Endereco: "))
                 
             
             if op_cliente == 3:
                 print("\n\n\n {0} \n|{1:^20}|\n {0} ".format(20*'-',"Editar Cliente"))
-                id = int(input("Digite o id do cliente: "))
-                if ControllerCliente.pesquisar_id(id):
-                    print("Realize a alteracao: ")
-                        
-                    nome = input("Nome(obs: conter no minimo 3 letras): ")
-                    
-                    telefone = input("Telefone(obs: conter 11 digitos): ")
-                        
-                    cpf = input("cpf(obs: conter 11 digitos): ")
-        
-                    email = input("E-mail(exemplo: meunome@instituto.com): ")
-                        
-                    endereco = input("Endereço(obs: conter no minimo 6 caracters): ")
-                        
-                    ControllerCliente.editar(id, nome, telefone, cpf, email, endereco)
-                else:
-                    print("Cliente nao existe!")
-                        
+                nomeAlterar = input("Digite o nome do cliente: ")
+                ControllerCliente.editar(nomeAlterar, input("Novo nome: "), input("Telefone: "), input("cpf: "), input("E-mail: "), input("Endereço: "))
+                
             if op_cliente == 4:
                 print("\n\n\n {0} \n|{1:^20}|\n {0} ".format(20*'-',"Deletar Cliente"))
-                ControllerCliente.deletar(int(input("Digite o id do cliente: ")))
+                ControllerCliente.deletar(input("Digite o nome do cliente: "))
                 
-    if op == 5:
+    if op_menuInical == 4:
         while True:
             print(" {0} \n|{1:^30}|\n {0} ".format(29*'-',"Menu Funcionario"))
             print("|{0:30}|\n|{1:30}|\n|{2:30}|\n|{3:30}|\n|{4:30}|\n {5} ".format('1 - Ver Funcionarios', "2 - Cadastrar Funcionario",
@@ -169,40 +114,56 @@ while True:
                 ControllerFuncionario.ver_funcionario()
                 input("Digite enter para fechar...")
                 print("\n\n")
+
             if op_funcionario == 2:
                 print("\n\n\n {0} \n|{1:^20}|\n {0} ".format(20*'-',"Cadastrar Funcionario"))
-                clt = input("clt (sim/não): ")
-                nome = input("Nome: ")
-                telefone = input("Telefone: ")
-                cpf = input("cpf: ")
-                email = input("E-mail: ")
-                endereco = input("Endereço: ")
-                if ControllerFuncionario.cadastrar(clt, nome, telefone, cpf, email, endereco):
-                    print("Cadastro realizado com Sucesso!")
-                else:
-                    print("Falha ao realizar cadastro!")
+                ControllerFuncionario.cadastrar(input("clt: "), input("Nome: "), input("Telefone: "), input("cpf: "), input("E-mail: "), input("Endereço: "))
+            
             if op_funcionario == 3:
                 print("\n\n\n {0} \n|{1:^20}|\n {0} ".format(20*'-',"Editar Funcionario"))
-                index = ControllerFuncionario.pesquisar_id(input("Digite o id do funcionario: "))
-                if index != -1:
-                    print("Realize as alteracoes: ")
-                    clt = input("clt (sim/não): ")
-                    nome = input("Nome: ")
-                    telefone = input("Telefone: ")
-                    cpf = input("cpf: ")
-                    email = input("E-mail: ")
-                    endereco = input("Endereço: ")
-                    if ControllerFuncionario.editar(index, clt, nome, telefone, cpf, email, endereco):
-                        print("Alteracoes realizadas com sucesso!")
-                    else:
-                        print("Falha na alteracao, os dados nao foram preenchidos corretamente!")
-                else:
-                    print("Falha ao realizar alteracao, o funcionario nao foi encontrado!")
+                ControllerFuncionario.editar(input("Digite o nome do funcionario: "), input("clt: "), input("Nome: "), input("Telefone: "), input("cpf: "), input("E-mail: "), input("Endereço: "))
+                
             if op_funcionario == 4:
                 print("\n\n\n {0} \n|{1:^20}|\n {0} ".format(20*'-',"Deletar Funcionario"))
-                index = ControllerFuncionario.pesquisar_id(input("Digite o id do funcionario: "))
-                if index != -1:
-                    ControllerFuncionario.deletar(index)
-                    print("Funcionario deletado com sucesso!")
-                else:
-                    print("Falha ao tentar deletar, funcionario nao encontrado!")
+                ControllerFuncionario.deletar(input("Digite o nome do funcionario: "))
+
+    if op_menuInical == 5:
+        while True:
+            print(" {0} \n|{1:^30}|\n {0} ".format(29*'-',"Caixa"))
+            print("|{0:30}|\n|{1:30}|\n {2} ".format('1 - Realizar Venda', "0 - Voltar", 30*'-'))
+            op_caixa = int(input("Digite a opção: "))
+            if op_caixa == 0:
+                break
+            if op_caixa == 1:
+                print("\n\n\n {0} \n|{1:^20}|\n {0} ".format(20*'-',"Venda"))
+                ControllerVenda.cadastrar(input("Nome do produto: "), input("Vendedor: "),input("Comprador: "), int(input("Quantidade: ")))
+    
+    if op_menuInical == 6:
+        while True:
+            print(" {0} \n|{1:^30}|\n {0} ".format(29*'-',"Relatorios"))
+            print("|{0:30}|\n|{1:30}|\n|{2:30}|\n|{3:30}|\n|{4:30}|\n {5} ".format('1 - Relatorio Geral', "2 - Relatorio por Data",
+                                                                "3 - Relatorio de Periodo", "4 - Relatorio de Produto",
+                                                                "0 - Voltar", 30*'-'))
+            op_relatorio = int(input("Digite a opção: "))
+            if op_relatorio == 0:
+                break
+            if op_relatorio == 1:
+                print("\n\n\n {0} \n|{1:^20}|\n {0} ".format(20*'-',"Relatorio Geral"))
+                ControllerVenda.relatorio_geral()
+                input("Aperte enter para fechar...")
+                print("\n\n\n")
+            if op_relatorio == 2:
+                print("\n\n\n {0} \n|{1:^20}|\n {0} ".format(20*'-',"Relatorio por Data"))
+                ControllerVenda.relatorio_parcial_data(input("Digite uma data: "))
+                input("Aperte enter para fechar...")
+                print("\n\n\n")
+            if op_relatorio == 3:
+                print("\n\n\n {0} \n|{1:^20}|\n {0} ".format(20*'-',"Relatorio Periodo"))
+                ControllerVenda.relatorio_periodo(input("Digite a data inicial: "),input("Digite a data Final: "))
+                input("Aperte enter para fechar...")
+                print("\n\n\n")
+            if op_relatorio == 4:
+                print("\n\n\n {0} \n|{1:^20}|\n {0} ".format(20*'-',"Relatorio Periodo"))
+                ControllerVenda.relatorio_parcial_produto(input("Digite o nome do produto: "))
+                input("Aperte enter para fechar...")
+                print("\n\n\n")

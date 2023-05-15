@@ -482,10 +482,4 @@ class ControllerVenda:
             return ordenado
         else:
             return None
-#ControllerVenda.cadastrar("Maracuja", 'Rayssa Flayny',"Carlos Rayllan", 10)
 
-#ControllerEstoque.ver_estoque()
-#ControllerCliente.cadastrar("Carlos Melo", "98982522521", "93845484343", "carlos.rayllan@gmail.com", "rua habitar brasil")
-ControllerFuncionario.cadastrar("sim",'Rafael Soares', "98982522554", "07385566278", "mtadayz2044@gmail.com", "Rua da banana")
-#ControllerVenda.relatorio_parcial_produto('Coca Cola 2l')
-#ControllerVenda.cadastrar("Tomate", "Rayssa Flayny", "Carlos Rayllan", 2)ff 
