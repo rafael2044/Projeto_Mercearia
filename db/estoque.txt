@@ -1,4 +1,4 @@
-1|Coca Cola 2l||8.5|18
+1|Coca Cola 2l|Sem Categoria|8.5|18
 2|Tomate|Frutas|4.0|11
 3|Maracuja|Frutas|7.0|15
 4|Maca|Frutas|9.0|15

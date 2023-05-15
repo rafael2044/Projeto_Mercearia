@@ -200,7 +200,7 @@ class ControllerCategoria:
                 DAOcategoria.salvar(i)
             estoque = DAOestoque.ler()
             DAOestoque.zerar()
-            estoque = list(map(lambda x: Estoque(Produto(x.get_produto().get_nome(), Categoria(""), x.get_produto().get_valor()),
+            estoque = list(map(lambda x: Estoque(Produto(x.get_produto().get_nome(), Categoria("Sem Categoria"), x.get_produto().get_valor()),
                                                  x.get_quantidade()) if x.get_produto().get_categoria().get_nome() == categoriaDeletar else x, estoque))
             print(estoque)
             for i in estoque:
