@@ -82,8 +82,8 @@ class ControllerCliente:
 class ControllerFuncionario:
     @classmethod
     def cadastrar(cls ,clt: str, nome: str, telefone: str, cpf: str, email: str,endereco: str):
-        if clt == 'sim' or clt == 'nao':
-            if len(nome)>=3 and not(cls.pesquisar_nome(nome)):
+        if len(nome)>=3 and not(cls.pesquisar_nome(nome)):
+            if len(clt) == 11 and len(list(filter(lambda x: x.get_clt() == clt, cls.funcionarios))) == 0:
                 if len(telefone) == 11 and len(list(filter(lambda x: x.get_telefone() == telefone, cls.funcionarios))) == 0:
                     if len(cpf) == 11 and len(list(filter(lambda x: x.get_cpf() == cpf, cls.funcionarios))) == 0:
                         if len(email.split("@")) == 2 and len(list(filter(lambda x: x.get_email() == email, cls.funcionarios))) == 0:
@@ -99,9 +99,9 @@ class ControllerFuncionario:
                 else:
                     print("Telefone ja existe!")
             else:
-                print("Funcionario ja possui um cadastro!")
+                print("Clt ja existe!")
         else:
-            print("A clt so pode assumir o valor 'sim' ou 'nao'!")
+            print("Funcionario ja existe!")
     
     @classmethod
     def ver_funcionario(cls):
@@ -117,7 +117,7 @@ class ControllerFuncionario:
     @classmethod
     def editar(cls, nomeAlterar, clt, nomeAlterado, telefone, cpf, email, endereco):
         if cls.pesquisar_nome(nomeAlterar):
-            if clt == 'sim' or clt == 'nao':
+            if len(clt) == 11 and len(list(filter(lambda x: x.get_clt() == clt, cls.funcionarios))) == 0:
                 if len(nomeAlterado)>=3 and not(cls.pesquisar_nome(nomeAlterado)):
                     if len(telefone) == 11 and len(list(filter(lambda x: x.get_telefone() == telefone, cls.funcionarios))) == 0:
                         if len(cpf) == 11 and len(list(filter(lambda x: x.get_cpf() == cpf, cls.funcionarios))) == 0:
@@ -139,7 +139,7 @@ class ControllerFuncionario:
                 else:
                     print("Funcionario ja possui um cadastro!")
             else:
-                print("A clt so pode assumir o valor 'sim' ou 'nao'!")
+                print("A clt ja existe!")
         else:
             print("Funcionario que deseja alterar nao existe!")
     
